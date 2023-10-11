@@ -1,0 +1,1 @@
+scp -o StrictHostKeyChecking=no robot_networktables.json lvuser@10.55.28.2:/home/lvuser/networktables.ini
