@@ -3,22 +3,28 @@ from typing import Literal
 
 import wpilib
 import wpiutil
+from wpilib import RobotBase
 from wpimath.kinematics import SwerveDrive4Odometry, SwerveDrive4Kinematics, SwerveModulePosition, ChassisSpeeds
 from wpimath.geometry import Translation2d, Rotation2d, Pose2d
+
+import ports
+from utils.property import defaultSetter
 from utils.safesubsystem import SafeSubsystem
 from wpimath.estimator import SwerveDrive4PoseEstimator
 
-from gyro import NavX, ADIS16448, ADIS16470, ADXRS, Empty
+from gyro import NavX, ADIS16448, ADIS16470, ADXRS, Empty, Gyro
 from utils.swervemodule import SwerveModule
+import utils.swervemodule
 from utils.swerveutils import discretize
 
 select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "adis16470"
 
-kMaxSpeed = 3  # 3 meters per second
-kMaxAngularSpeed = math.pi / 2  # 1/2 radian per second
+k_max_speed = utils.swervemodule.k_max_speed
+k_max_angular_speed = utils.swervemodule.k_module_max_angular_velocity
 
 
 class Drivetrain(SafeSubsystem):
+
     def __init__(self) -> None:
         super().__init__()
         # Swerve Module motor positions
@@ -27,10 +33,14 @@ class Drivetrain(SafeSubsystem):
         self.motor_bl_loc = Translation2d(-0.33, 0.33)
         self.motor_br_loc = Translation2d(-0.33, -0.33)
 
-        self.swerve_module_fl = SwerveModule(1, 2, 0, 1, 2, 3)
-        self.swerve_module_fr = SwerveModule(3, 4, 4, 5, 6, 7)
-        self.swerve_module_bl = SwerveModule(5, 6, 8, 9, 10, 11)
-        self.swerve_module_br = SwerveModule(7, 8, 12, 13, 14, 15)
+        self.swerve_module_fl = SwerveModule(ports.drivetrain_motor_driving_fl, ports.drivetrain_motor_turning_fl, 0, 1,
+                                             2, 3)
+        self.swerve_module_fr = SwerveModule(ports.drivetrain_motor_driving_fr, ports.drivetrain_motor_turning_fr, 4, 5,
+                                             6, 7)
+        self.swerve_module_bl = SwerveModule(ports.drivetrain_motor_driving_bl, ports.drivetrain_motor_turning_bl, 8, 9,
+                                             10, 11)
+        self.swerve_module_br = SwerveModule(ports.drivetrain_motor_driving_br, ports.drivetrain_motor_turning_br, 12,
+                                             13, 14, 15)
 
         # Gyro
         self._gyro = {
@@ -41,7 +51,10 @@ class Drivetrain(SafeSubsystem):
             "empty": Empty,
         }[select_gyro]()
 
+        self.addChild("Gyro", self._gyro)
+
         self._field = wpilib.Field2d()
+        wpilib.SmartDashboard.putData("Field", self._field)
 
         self.swervedrive_kinematics = SwerveDrive4Kinematics(self.motor_fl_loc, self.motor_fr_loc, self.motor_bl_loc,
                                                              self.motor_br_loc)
@@ -66,6 +79,12 @@ class Drivetrain(SafeSubsystem):
             Pose2d(0, 0, 0)
         )
 
+        if RobotBase.isReal():
+            # Real robot things
+            pass
+        else:  # is sim
+            pass
+
     def drive(self, x_speed: float, y_speed: float, rot_speed: float, is_field_relative: bool, period_seconds: float):
         swerve_module_states = self.swervedrive_kinematics.toSwerveModuleStates(
             discretize(
@@ -74,7 +93,7 @@ class Drivetrain(SafeSubsystem):
                 period_seconds
             )
         )
-        SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, kMaxSpeed)
+        SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, k_max_speed)
         self.swerve_module_fl.set_desired_state(swerve_module_states[0])
         self.swerve_module_fr.set_desired_state(swerve_module_states[1])
         self.swerve_module_bl.set_desired_state(swerve_module_states[2])
@@ -98,11 +117,16 @@ class Drivetrain(SafeSubsystem):
             ),
         )
 
-        self._field.setRobotPose(self._estimator.getEstimatedPosition())
+        self._field.setRobotPose(self.swerve_estimator.getEstimatedPosition())
+
+    def simulationPeriodic(self):
+        self.swervedrive_odometry.update(
+            self._gyro.getRotation2d(),
+            self.swerve_module_fl.get_position(), self.swerve_module_fr.get_position(),
+            self.swerve_module_bl.get_position(), self.swerve_module_br.get_position()
+        )
+
+        self._field.setRobotPose(self.swervedrive_odometry.getPose())
 
     def initSendable(self, builder: wpiutil.SendableBuilder) -> None:
         super().initSendable(builder)
-        builder.addDoubleProperty("Left motor", lambda: self.swerve_module_fl.get or -999.0, defaultSetter)
-        builder.addDoubleProperty("Right Motor", lambda: self._motor_right.get() or -999.0, defaultSetter)
-        builder.addDoubleProperty("Left Encoder Position", self.getLeftEncoderPosition, defaultSetter)
-        builder.addDoubleProperty("Right Encoder Position", self.getRightEncoderPosition, defaultSetter)

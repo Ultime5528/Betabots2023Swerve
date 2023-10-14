@@ -5,23 +5,18 @@ from typing import Optional
 import commands2
 import wpilib
 
+from subsystems.drivetrain import Drivetrain
+
 
 class Robot(commands2.TimedCommandRobot):
     def robotInit(self):
-        self.stick = commands2.button.CommandJoystick(0)
+        wpilib.LiveWindow.enableAllTelemetry()
+        wpilib.LiveWindow.setEnabled(True)
+        wpilib.DriverStation.silenceJoystickConnectionWarning(True)
 
-    def autonomousInit(self) -> None:
-        self.autoCommand: commands2.CommandBase = self.autoChooser.getSelected()
-        if self.autoCommand:
-            self.autoCommand.schedule()
+        self.stick = wpilib.Joystick(0)
 
-    def teleopInit(self) -> None:
-        if self.autoCommand:
-            self.autoCommand.cancel()
-
-    def robotPeriodic(self) -> None:
-        super().robotPeriodic()
-        self.loop.poll()
+        self.drivetrain = Drivetrain()
 
 
 if __name__ == "__main__":
