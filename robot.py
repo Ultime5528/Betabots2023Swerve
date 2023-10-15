@@ -19,7 +19,7 @@ class Robot(commands2.TimedCommandRobot):
 
         self.drivetrain = Drivetrain()
 
-        self.drivetrain.setDefaultCommand(Drive(self.drivetrain, self.stick, self))
+        self.drivetrain.setDefaultCommand(Drive(lambda: self.getPeriod(), self.drivetrain, self.stick))
 
 
 if __name__ == "__main__":
