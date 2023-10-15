@@ -20,7 +20,7 @@ from utils.swerveutils import discretize
 select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "adis16470"
 
 k_max_speed = utils.swervemodule.k_max_speed
-k_max_angular_speed = utils.swervemodule.k_module_max_angular_velocity
+k_max_angular_speed = math.pi
 
 
 class Drivetrain(SafeSubsystem):
