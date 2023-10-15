@@ -48,11 +48,11 @@ class SwerveModule:
     def set_desired_state(self, desiredState):
         encoder_rotation = Rotation2d(self.m_turning_encoder.getPosition())
         state = SwerveModuleState.optimize(desiredState, encoder_rotation)
-        state.speed *= state.angle.minus(encoder_rotation).cos()
+        state.speed *= (state.angle-encoder_rotation).cos()
         drive_output = self.m_drivePIDController.calculate(self.m_drive_encoder.getVelocity(), state.speed)
         drive_feedforward = self.m_driveFeedforward.calculate(state.speed)
         turn_output = self.m_turningPIDController.calculate(self.m_turning_encoder.getPosition(),
-                                                            state.angle.getRadians())
+                                                            state.angle.radians())
         turn_feedforward = self.m_turnFeedforward.calculate(self.m_turningPIDController.getSetpoint().velocity)
         self.m_drive_motor.setVoltage(drive_output + drive_feedforward)
         self.m_turning_motor.setVoltage(turn_output + turn_feedforward)
