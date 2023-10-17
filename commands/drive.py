@@ -24,12 +24,11 @@ class Drive(SafeCommand):
         self.m_rotLimiter = SlewRateLimiter(3)
 
     def execute(self):
-        if self.xbox_remote.getLeftX() != 0:
-            x_speed = self.m_xspeedLimiter.calculate(self.xbox_remote.getLeftY()) * -1 * utils.swervemodule.k_max_speed
-            y_speed = self.m_yspeedLimiter.calculate(self.xbox_remote.getLeftX()) * -1 * utils.swervemodule.k_max_speed
-            rot = self.m_rotLimiter.calculate(self.xbox_remote.getRightX()) * -1 * subsystems.drivetrain.k_max_angular_speed
+        x_speed = self.m_xspeedLimiter.calculate(self.xbox_remote.getLeftY()) * -1 * utils.swervemodule.k_max_speed
+        y_speed = self.m_yspeedLimiter.calculate(self.xbox_remote.getLeftX()) * -1 * utils.swervemodule.k_max_speed
+        rot = self.m_rotLimiter.calculate(self.xbox_remote.getRightX()) * -1 * subsystems.drivetrain.k_max_angular_speed
 
-            self.drivetrain.drive(x_speed, y_speed, rot, True, self.get_period())
+        self.drivetrain.drive(x_speed, y_speed, rot, True, self.get_period())
 
     def end(self, interrupted: bool) -> None:
         self.drivetrain.drive(0.0, 0.0, 0.0, True, self.get_period())

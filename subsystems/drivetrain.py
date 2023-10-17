@@ -4,7 +4,8 @@ from typing import Literal
 import wpilib
 import wpiutil
 from wpilib import RobotBase
-from wpimath.kinematics import SwerveDrive4Odometry, SwerveDrive4Kinematics, SwerveModulePosition, ChassisSpeeds
+from wpimath.kinematics import SwerveDrive4Odometry, SwerveDrive4Kinematics, SwerveModulePosition, ChassisSpeeds, \
+    SwerveModuleState
 from wpimath.geometry import Translation2d, Rotation2d, Pose2d
 
 import ports
@@ -79,11 +80,8 @@ class Drivetrain(SafeSubsystem):
             Pose2d(0, 0, 0)
         )
 
-        if RobotBase.isReal():
-            # Real robot things
-            pass
-        else:  # is sim
-            pass
+        if RobotBase.isSimulation():
+            self.sim_yaw = 0
 
     def drive(self, x_speed: float, y_speed: float, rot_speed: float, is_field_relative: bool, period_seconds: float):
         swerve_module_states = self.swervedrive_kinematics.toSwerveModuleStates(
@@ -120,11 +118,26 @@ class Drivetrain(SafeSubsystem):
         self._field.setRobotPose(self.swerve_estimator.getEstimatedPosition())
 
     def simulationPeriodic(self):
+        self.swerve_module_fl.simulation_update()
+        self.swerve_module_fr.simulation_update()
+        self.swerve_module_bl.simulation_update()
+        self.swerve_module_br.simulation_update()
+
         self.swervedrive_odometry.update(
             self._gyro.getRotation2d(),
             self.swerve_module_fl.get_position(), self.swerve_module_fr.get_position(),
             self.swerve_module_bl.get_position(), self.swerve_module_br.get_position()
         )
+
+        module_states = (
+            self.swerve_module_fl.get_state(), self.swerve_module_fr.get_state(),
+            self.swerve_module_bl.get_state(), self.swerve_module_br.get_state()
+        )
+
+        chassis_speed = self.swervedrive_kinematics.toChassisSpeeds(*module_states)
+        chassis_rotation_speed = chassis_speed.omega
+        self.sim_yaw += chassis_rotation_speed * 0.02
+        self._gyro.setSimAngle(-math.degrees(self.sim_yaw))
 
         self._field.setRobotPose(self.swervedrive_odometry.getPose())
 
