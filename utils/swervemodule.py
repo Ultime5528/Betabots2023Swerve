@@ -61,7 +61,9 @@ class SwerveModule:
             self.turn_output: float = 0
             self.sim_turn_encoder_distance: float = 0
             self.sim_drive_encoder_distance: float = 0
+
             # TODO Add robot specific parameters
+            # Flywheels allow simulation of a more physically realistic rendering of swerve module properties
             self.sim_turn_motor = FlywheelSim(
                 LinearSystemId.identifyVelocitySystemMeters(0.16, 0.0348),
                 # Magical values for sim pulled from : https://github.com/4201VitruvianBots/2021SwerveSim/blob/main/Swerve2021/src/main/java/frc/robot/subsystems/SwerveModule.java
