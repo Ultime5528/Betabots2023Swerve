@@ -21,7 +21,6 @@ k_max_speed = 3  # 3 meters per second
 k_encoder_resolution = 4096
 # TODO Add robot specific parameters
 k_wheel_radius = 0.0381  # meters
-k_wheel_moment_of_inertia = 0.0001146  # I = 0.079kg * 0.0381m ^ 2 = 0.0001146 kg*m^2
 
 k_turn_motor_gear_ratio = 12.8  # //12 to 1
 k_turn_encoder_conversion_factor = 2 * math.pi / k_encoder_resolution
@@ -119,7 +118,6 @@ class SwerveModule:
         self.m_turning_motor.setVoltage(self.turn_output + turn_feedforward)
 
     def simulation_update(self):
-        print("Turn Output: ", round(self.turn_output, 2), "Drive Output: ", round(self.drive_output, 2))
         self.sim_turn_motor.setInputVoltage(self.turn_output / k_module_max_angular_acceleration * RobotController.getBatteryVoltage())
         self.sim_drive_motor.setInputVoltage(self.drive_output / k_max_speed * RobotController.getBatteryVoltage())
 
