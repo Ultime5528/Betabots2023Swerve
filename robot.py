@@ -10,6 +10,7 @@ from subsystems.drivetrain import Drivetrain
 
 
 class Robot(commands2.TimedCommandRobot):
+    xboxremote: commands2.button.CommandXboxController = None
     def robotInit(self):
         wpilib.LiveWindow.enableAllTelemetry()
         wpilib.LiveWindow.setEnabled(True)
@@ -20,7 +21,7 @@ class Robot(commands2.TimedCommandRobot):
         self.drivetrain = Drivetrain()
 
         self.drivetrain.setDefaultCommand(
-            Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote)
+            Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote, lambda: self.xboxremote.getRightBumper() <= 0)
         )
 
 
