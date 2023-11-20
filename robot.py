@@ -6,6 +6,7 @@ import commands2.button
 import wpilib
 
 from commands.drive import Drive
+from subsystems.blocker import Blocker
 from subsystems.drivetrain import Drivetrain
 
 
@@ -18,6 +19,8 @@ class Robot(commands2.TimedCommandRobot):
         self.xboxremote = commands2.button.CommandXboxController(0)
 
         self.drivetrain = Drivetrain()
+
+        self.blocker = Blocker()
 
         self.drivetrain.setDefaultCommand(
             Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote)
