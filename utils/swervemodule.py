@@ -14,6 +14,7 @@ from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.trajectory import TrapezoidProfile
 
+from utils.sparkmaxsim import SparkMaxSim
 
 k_module_max_angular_velocity = math.pi / 2  # 1/2 radian per second
 k_module_max_angular_acceleration = 2 * math.pi  # radians per second squared
@@ -39,11 +40,7 @@ class SwerveModule:
     def __init__(
         self,
         drive_motor_port,
-        turning_motor_port,
-        drive_encoder_channel_a,
-        drive_encoder_channel_b,
-        turning_encoder_channel_a,
-        turning_encoder_channel_b,
+        turning_motor_port
     ):
         self.m_drive_motor = rev.CANSparkMax(
             drive_motor_port, rev.CANSparkMax.MotorType.kBrushless
@@ -60,7 +57,7 @@ class SwerveModule:
         self.m_turning_encoder.setPositionConversionFactor(
             k_turn_encoder_conversion_factor
         )
-
+        
         self.m_turningPIDController = ProfiledPIDController(
             1,
             0,
@@ -78,16 +75,9 @@ class SwerveModule:
 
         if RobotBase.isSimulation():
             # Simulation things
-            self.sim_drive_encoder = EncoderSim(
-                Encoder(drive_encoder_channel_a, drive_encoder_channel_b)
-            )
-            self.sim_drive_encoder.setDistancePerPulse(
-                k_drive_encoder_distance_per_pulse
-            )
-            self.sim_turn_encoder = EncoderSim(
-                Encoder(turning_encoder_channel_a, turning_encoder_channel_b)
-            )
-            self.sim_turn_encoder.setDistancePerPulse(k_turn_encoder_distance_per_pulse)
+            self.sim_drive_encoder = SparkMaxSim(self.m_drive_motor)
+
+            self.sim_turn_encoder = SparkMaxSim(self.m_turning_motor)
             self.drive_output: float = 0
             self.turn_output: float = 0
             self.sim_turn_encoder_distance: float = 0
@@ -112,7 +102,7 @@ class SwerveModule:
         if RobotBase.isReal():
             return self.m_drive_encoder.getVelocity()
         else:
-            return self.sim_drive_encoder.getRate()
+            return self.sim_drive_encoder.getVelocity()
 
     def getTurningRadians(self) -> float:
         """
@@ -121,7 +111,7 @@ class SwerveModule:
         if RobotBase.isReal():
             return self.m_turning_encoder.getPosition()
         else:
-            return self.sim_turn_encoder.getDistance()
+            return self.sim_turn_encoder.getPosition()
 
     def getState(self) -> SwerveModuleState:
         return SwerveModuleState(
@@ -132,7 +122,7 @@ class SwerveModule:
         if RobotBase.isReal():
             return self.m_drive_encoder.getPosition()
         else:
-            return self.sim_drive_encoder.getDistance()
+            return self.sim_drive_encoder.getPosition()
 
     def getPosition(self) -> SwerveModulePosition:
         return SwerveModulePosition(
@@ -174,11 +164,11 @@ class SwerveModule:
         self.sim_turn_encoder_distance += (
             self.sim_turn_motor.getAngularVelocity() * 0.02
         )
-        self.sim_turn_encoder.setDistance(self.sim_turn_encoder_distance)
-        self.sim_turn_encoder.setRate(self.sim_turn_motor.getAngularVelocity())
+        self.sim_turn_encoder.setPosition(self.sim_turn_encoder_distance)
+        self.sim_turn_encoder.setVelocity(self.sim_turn_motor.getAngularVelocity())
 
         self.sim_drive_encoder_distance += (
             self.sim_drive_motor.getAngularVelocity() * 0.02
         )
-        self.sim_drive_encoder.setDistance(self.sim_drive_encoder_distance)
-        self.sim_drive_encoder.setRate(self.sim_drive_motor.getAngularVelocity())
+        self.sim_drive_encoder.setPosition(self.sim_drive_encoder_distance)
+        self.sim_drive_encoder.setVelocity(self.sim_drive_motor.getAngularVelocity())
