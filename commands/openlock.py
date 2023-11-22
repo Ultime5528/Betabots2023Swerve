@@ -9,5 +9,4 @@ class OpenLock(SafeCommand):
         self.addRequirements(self.blocker)
 
     def execute(self) -> None:
-        if not self.blocker.limit_switch_blocker.get():
-            self.blocker.unlock()
+        self.blocker.unlock()
