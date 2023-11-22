@@ -39,35 +39,19 @@ class Drivetrain(SafeSubsystem):
 
         self.swerve_module_fl = SwerveModule(
             ports.drivetrain_motor_driving_fl,
-            ports.drivetrain_motor_turning_fl,
-            0,
-            1,
-            2,
-            3,
+            ports.drivetrain_motor_turning_fl
         )
         self.swerve_module_fr = SwerveModule(
             ports.drivetrain_motor_driving_fr,
-            ports.drivetrain_motor_turning_fr,
-            4,
-            5,
-            6,
-            7,
+            ports.drivetrain_motor_turning_fr
         )
         self.swerve_module_bl = SwerveModule(
             ports.drivetrain_motor_driving_bl,
-            ports.drivetrain_motor_turning_bl,
-            8,
-            9,
-            10,
-            11,
-        )
+            ports.drivetrain_motor_turning_bl
+         )
         self.swerve_module_br = SwerveModule(
             ports.drivetrain_motor_driving_br,
-            ports.drivetrain_motor_turning_br,
-            12,
-            13,
-            14,
-            15,
+            ports.drivetrain_motor_turning_br
         )
 
         # Gyro
