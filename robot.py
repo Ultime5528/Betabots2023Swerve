@@ -21,7 +21,7 @@ class Robot(commands2.TimedCommandRobot):
         self.drivetrain = Drivetrain()
 
         self.drivetrain.setDefaultCommand(
-            Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote, lambda: self.xboxremote.getRightBumper() <= 0)
+            Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote)
         )
 
 

@@ -17,7 +17,6 @@ class Drive(SafeCommand):
         getPeriod: Callable[[], int],
         drivetrain: Drivetrain,
         xbox_remote: commands2.button.CommandXboxController,
-        is_field_relative: Callable[[], bool]
     ):
         super().__init__()
         self.addRequirements(drivetrain)
@@ -28,7 +27,6 @@ class Drive(SafeCommand):
         self.m_xspeedLimiter = SlewRateLimiter(3)
         self.m_yspeedLimiter = SlewRateLimiter(3)
         self.m_rotLimiter = SlewRateLimiter(3)
-        self.is_field_relative = is_field_relative
 
     def execute(self):
         x_speed = (
@@ -45,7 +43,10 @@ class Drive(SafeCommand):
             self.m_rotLimiter.calculate(self.xbox_remote.getRightX())
             * subsystems.drivetrain.k_max_angular_speed
         )
-        self.drivetrain.drive(x_speed, y_speed, rot, self.is_field_relative(), self.get_period())
+        self.drivetrain.drive(x_speed, y_speed, rot, self.isFieldRelative(), self.get_period())
+
+    def isFieldRelative(self):
+        return self.xbox_remote.getRightBumper() <= 0
 
     def end(self, interrupted: bool) -> None:
-        self.drivetrain.drive(0.0, 0.0, 0.0, self.is_field_relative(), self.get_period())
+        self.drivetrain.drive(0.0, 0.0, 0.0, self.isFieldRelative(), self.get_period())
