@@ -10,7 +10,6 @@ from subsystems.drivetrain import Drivetrain
 
 
 class Robot(commands2.TimedCommandRobot):
-    xboxremote: commands2.button.CommandXboxController = None
     def robotInit(self):
         wpilib.LiveWindow.enableAllTelemetry()
         wpilib.LiveWindow.setEnabled(True)
