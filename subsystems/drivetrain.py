@@ -31,15 +31,15 @@ class Drivetrain(SafeSubsystem):
     length = autoproperty(0.68)
     max_angular_speed = autoproperty(math.pi)
 
-    def __init__(self, getPeriod: Callable[[], int],) -> None:
+    def __init__(self, period: float) -> None:
         super().__init__()
-        self.period_seconds = getPeriod
+        self.period_seconds = period
 
         # Swerve Module motor positions
         self.motor_fl_loc = Translation2d(self.width/2, self.length/2)
-        self.motor_fr_loc = Translation2d(self.width/2, -(self.length/2))
-        self.motor_bl_loc = Translation2d(-(self.width/2), self.length/2)
-        self.motor_br_loc = Translation2d(-(self.width/2), -(self.length/2))
+        self.motor_fr_loc = Translation2d(self.width/2, -self.length/2)
+        self.motor_bl_loc = Translation2d(-self.width/2, self.length/2)
+        self.motor_br_loc = Translation2d(-self.width/2, -self.length/2)
 
         self.swerve_module_fl = SwerveModule(
             ports.drivetrain_motor_driving_fl,
@@ -129,7 +129,7 @@ class Drivetrain(SafeSubsystem):
                 )
                 if is_field_relative
                 else ChassisSpeeds(x_speed, y_speed, rot_speed),
-                self.period_seconds(),
+                self.period_seconds,
             )
         )
         SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, self.swerve_module_fr.max_speed)
@@ -161,10 +161,10 @@ class Drivetrain(SafeSubsystem):
         self._field.setRobotPose(self.swerve_estimator.getEstimatedPosition())
 
     def simulationPeriodic(self):
-        self.swerve_module_fl.simulationUpdate()
-        self.swerve_module_fr.simulationUpdate()
-        self.swerve_module_bl.simulationUpdate()
-        self.swerve_module_br.simulationUpdate()
+        self.swerve_module_fl.simulationUpdate(self.period_seconds)
+        self.swerve_module_fr.simulationUpdate(self.period_seconds)
+        self.swerve_module_bl.simulationUpdate(self.period_seconds)
+        self.swerve_module_br.simulationUpdate(self.period_seconds)
 
         self.swervedrive_odometry.update(
             self._gyro.getRotation2d(),

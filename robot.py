@@ -17,7 +17,7 @@ class Robot(commands2.TimedCommandRobot):
 
         self.xboxremote = commands2.button.CommandXboxController(0)
 
-        self.drivetrain = Drivetrain(lambda: self.getPeriod())
+        self.drivetrain = Drivetrain(self.getPeriod())
 
         self.drivetrain.setDefaultCommand(
             Drive(self.drivetrain, self.xboxremote)
