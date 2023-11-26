@@ -2,26 +2,26 @@
 import math
 from typing import Optional
 
-import commands2
+import commands2.button
 import wpilib
+
+from commands.drive import Drive
+from subsystems.drivetrain import Drivetrain
 
 
 class Robot(commands2.TimedCommandRobot):
     def robotInit(self):
-        self.stick = commands2.button.CommandJoystick(0)
+        wpilib.LiveWindow.enableAllTelemetry()
+        wpilib.LiveWindow.setEnabled(True)
+        wpilib.DriverStation.silenceJoystickConnectionWarning(True)
 
-    def autonomousInit(self) -> None:
-        self.autoCommand: commands2.CommandBase = self.autoChooser.getSelected()
-        if self.autoCommand:
-            self.autoCommand.schedule()
+        self.xboxremote = commands2.button.CommandXboxController(0)
 
-    def teleopInit(self) -> None:
-        if self.autoCommand:
-            self.autoCommand.cancel()
+        self.drivetrain = Drivetrain(self.getPeriod())
 
-    def robotPeriodic(self) -> None:
-        super().robotPeriodic()
-        self.loop.poll()
+        self.drivetrain.setDefaultCommand(
+            Drive(self.drivetrain, self.xboxremote)
+        )
 
 
 if __name__ == "__main__":
