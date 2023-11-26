@@ -19,7 +19,7 @@ from utils.safesubsystem import SafeSubsystem
 from utils.swervemodule import SwerveModule
 from utils.swerveutils import discretize
 
-select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "adis16470"
+select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empty"
 
 
 class Drivetrain(SafeSubsystem):
@@ -47,11 +47,13 @@ class Drivetrain(SafeSubsystem):
         )
         self.swerve_module_bl = SwerveModule(
             ports.drivetrain_motor_driving_bl,
-            ports.drivetrain_motor_turning_bl
+            ports.drivetrain_motor_turning_bl,
+            True
          )
         self.swerve_module_br = SwerveModule(
             ports.drivetrain_motor_driving_br,
-            ports.drivetrain_motor_turning_br
+            ports.drivetrain_motor_turning_br,
+            True
         )
 
         # Gyro
@@ -129,10 +131,10 @@ class Drivetrain(SafeSubsystem):
             )
         )
         SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, self.swerve_module_fr.max_speed)
-        self.swerve_module_fl.setDesiredState(swerve_module_states[0])
+        # self.swerve_module_fl.setDesiredState(swerve_module_states[0])
         self.swerve_module_fr.setDesiredState(swerve_module_states[1])
-        self.swerve_module_bl.setDesiredState(swerve_module_states[2])
-        self.swerve_module_br.setDesiredState(swerve_module_states[3])
+        # self.swerve_module_bl.setDesiredState(swerve_module_states[2])
+        # self.swerve_module_br.setDesiredState(swerve_module_states[3])
 
     def getRotation(self):
         return self._gyro.getRotation2d()
