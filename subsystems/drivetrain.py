@@ -27,6 +27,11 @@ class Drivetrain(SafeSubsystem):
     length = autoproperty(0.68)
     max_angular_speed = autoproperty(math.pi)
 
+    angular_offset_fl = autoproperty(-math.pi / 2)
+    angular_offset_fr = autoproperty(0.0)
+    angular_offset_bl = autoproperty(math.pi)
+    angular_offset_br = autoproperty(math.pi / 2)
+
     def __init__(self, period: float) -> None:
         super().__init__()
         self.period_seconds = period
@@ -74,18 +79,6 @@ class Drivetrain(SafeSubsystem):
             self.motor_fl_loc, self.motor_fr_loc, self.motor_bl_loc, self.motor_br_loc
         )
 
-        self.swervedrive_odometry = SwerveDrive4Odometry(
-            self.swervedrive_kinematics,
-            self._gyro.getRotation2d(),
-            (
-                self.swerve_module_fl.getPosition(),
-                self.swerve_module_fr.getPosition(),
-                self.swerve_module_bl.getPosition(),
-                self.swerve_module_br.getPosition(),
-            ),
-            Pose2d(0, 0, 0),
-        )
-
         self.swerve_estimator = SwerveDrive4PoseEstimator(
             self.swervedrive_kinematics,
             self._gyro.getRotation2d(),
@@ -100,6 +93,18 @@ class Drivetrain(SafeSubsystem):
 
         if RobotBase.isSimulation():
             self.sim_yaw = 0
+
+            self.swervedrive_odometry = SwerveDrive4Odometry(
+                self.swervedrive_kinematics,
+                self._gyro.getRotation2d(),
+                (
+                    self.swerve_module_fl.getPosition(),
+                    self.swerve_module_fr.getPosition(),
+                    self.swerve_module_bl.getPosition(),
+                    self.swerve_module_br.getPosition(),
+                ),
+                Pose2d(0, 0, 0),
+            )
 
     def joystickDrive(self,
         x_speed: float,
