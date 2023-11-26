@@ -5,25 +5,21 @@ import wpilib
 import wpiutil
 from wpilib import RobotBase
 from wpimath.estimator import SwerveDrive4PoseEstimator
-from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+from wpimath.geometry import Pose2d, Translation2d
 from wpimath.kinematics import (
     ChassisSpeeds,
     SwerveDrive4Kinematics,
     SwerveDrive4Odometry,
-    SwerveModulePosition,
-    SwerveModuleState,
 )
 
 import ports
-import utils.swervemodule
-from gyro import ADIS16448, ADIS16470, ADXRS, Empty, Gyro, NavX
-from utils.property import defaultSetter, autoproperty
+from gyro import ADIS16448, ADIS16470, ADXRS, Empty, NavX
+from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
 from utils.swervemodule import SwerveModule
 from utils.swerveutils import discretize
 
 select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "adis16470"
-
 
 
 class Drivetrain(SafeSubsystem):
@@ -183,10 +179,7 @@ class Drivetrain(SafeSubsystem):
 
         chassis_speed = self.swervedrive_kinematics.toChassisSpeeds(*module_states)
         chassis_rotation_speed = chassis_speed.omega
-        self.sim_yaw += chassis_rotation_speed * self.period_seconds()
+        self.sim_yaw += chassis_rotation_speed * self.period_seconds
         self._gyro.setSimAngle(-math.degrees(self.sim_yaw))
 
         self._field.setRobotPose(self.swervedrive_odometry.getPose())
-
-    def initSendable(self, builder: wpiutil.SendableBuilder) -> None:
-        super().initSendable(builder)

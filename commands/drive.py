@@ -1,13 +1,7 @@
-from typing import Callable
-
 import commands2.button
-import wpilib
-from wpimath.filter import LinearFilter, SlewRateLimiter
+from wpimath.filter import SlewRateLimiter
 
-import subsystems.drivetrain
-import utils.swervemodule
 from subsystems.drivetrain import Drivetrain
-from utils.property import autoproperty
 from utils.safecommand import SafeCommand
 
 
