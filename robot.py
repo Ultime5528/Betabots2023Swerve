@@ -7,9 +7,9 @@ import wpilib
 from commands2 import Trigger
 from wpilib.event import BooleanEvent
 
-from commands.closelock import CloseLock
+from commands.lock import Lock
 from commands.drive import Drive
-from commands.openlock import OpenLock
+from commands.unlock import Unlock
 from subsystems.blocker import Blocker
 from subsystems.drivetrain import Drivetrain
 
@@ -31,8 +31,8 @@ class Robot(commands2.TimedCommandRobot):
             Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote)
         )
 
-        wpilib.SmartDashboard.putData("Close", CloseLock(self.blocker))
-        wpilib.SmartDashboard.putData("Open", OpenLock(self.blocker))
+        wpilib.SmartDashboard.putData("Close", Lock(self.blocker))
+        wpilib.SmartDashboard.putData("Open", Unlock(self.blocker))
 
 
 if __name__ == "__main__":

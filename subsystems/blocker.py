@@ -2,6 +2,7 @@ import wpilib
 from wpilib import DigitalInput, PneumaticsModuleType, RobotBase
 import wpilib.simulation
 import ports
+from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
 
 
@@ -12,15 +13,11 @@ class Blocker(SafeSubsystem):
         self.blocker = wpilib.DoubleSolenoid(PneumaticsModuleType.REVPH, ports.blocker_solenoid_forward,
                                              ports.blocker_solenoid_reverse)
 
-        if RobotBase.isSimulation():
-            self.blocker = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.blocker_solenoid_forward,
-                                                 ports.blocker_solenoid_reverse)
-
     def lock(self):
         self.blocker.set(wpilib.DoubleSolenoid.Value.kForward)
 
     def unlock(self):
         self.blocker.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-    def getLimitswitch(self):
+    def isArmDown(self):
         return self.limit_switch_blocker.get()

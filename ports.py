@@ -20,11 +20,12 @@ drivetrain_motor_driving_bl: Final = 4
 drivetrain_motor_turning_bl: Final = 5
 drivetrain_motor_driving_br: Final = 6
 drivetrain_motor_turning_br: Final = 7
-winch_motor: Final = 7
+
 # PWM
 
 # DIO
 blocker_limitswitch: Final = 1
+
 # PCM
 blocker_solenoid_forward: Final = 2
 blocker_solenoid_reverse: Final = 3
