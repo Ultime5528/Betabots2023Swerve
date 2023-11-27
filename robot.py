@@ -22,13 +22,13 @@ class Robot(commands2.TimedCommandRobot):
 
         self.xboxremote = commands2.button.CommandXboxController(0)
 
-        self.drivetrain = Drivetrain()
+        self.drivetrain = Drivetrain(self.getPeriod())
 
         self.blocker = Blocker()
 
 
         self.drivetrain.setDefaultCommand(
-            Drive(lambda: self.getPeriod(), self.drivetrain, self.xboxremote)
+            Drive(self.drivetrain, self.xboxremote)
         )
 
         wpilib.SmartDashboard.putData("Close", Lock(self.blocker))
