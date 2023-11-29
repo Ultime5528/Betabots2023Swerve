@@ -16,7 +16,7 @@ class Catapult(SafeSubsystem):
         self.limit_switch_catapult = DigitalInput(ports.catapult_limitswitch)
         self.piston_catapult = wpilib.DoubleSolenoid(PneumaticsModuleType.REVPH, ports.blocker_solenoid_forward,
                                                      ports.blocker_solenoid_reverse)
-        self.winch_motor = rev.CANSparkMax(ports.catapult_motor)
+        self.winch_motor = rev.CANSparkMax(ports.catapult_motor, rev.CANSparkMax.MotorType.kBrushless)
         self.encoder = self.winch_motor.getEncoder()
 
     def lock(self):
