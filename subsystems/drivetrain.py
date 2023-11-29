@@ -10,7 +10,7 @@ from wpimath.geometry import Pose2d, Translation2d
 from wpimath.kinematics import (
     ChassisSpeeds,
     SwerveDrive4Kinematics,
-    SwerveDrive4Odometry,
+    SwerveDrive4Odometry, SwerveModuleState,
 )
 
 import ports
@@ -176,15 +176,13 @@ class Drivetrain(SafeSubsystem):
         rot_speed *= self.current_rotation * self.max_angular_speed
 
         swerve_module_states = self.swervedrive_kinematics.toSwerveModuleStates(
-            discretize(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                    x_speed, y_speed, rot_speed, self._gyro.getRotation2d()
-                )
-                if is_field_relative
-                else ChassisSpeeds(x_speed, y_speed, rot_speed),
-                self.period_seconds,
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                x_speed, y_speed, rot_speed, self._gyro.getRotation2d()
             )
+            if is_field_relative
+            else ChassisSpeeds(x_speed, y_speed, rot_speed)
         )
+
         SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, self.swerve_module_fr.max_speed)
         # self.swerve_module_fl.setDesiredState(swerve_module_states[0])
         self.swerve_module_fr.setDesiredState(swerve_module_states[1])
@@ -199,6 +197,15 @@ class Drivetrain(SafeSubsystem):
 
     def getPose(self):
         return self.swerve_estimator.getEstimatedPosition()
+
+    def setXFormation(self):
+        """
+        Points all the wheels into the center to prevent movement
+        """
+        self.swerve_module_fl.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+        self.swerve_module_fr.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
+        self.swerve_module_bl.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
+        self.swerve_module_br.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
 
     def periodic(self):
         self.swerve_estimator.update(

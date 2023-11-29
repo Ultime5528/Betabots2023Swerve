@@ -73,69 +73,67 @@ class SwerveModule:
             turning_motor_inverted: bool = False,
     ):
         # TODO Changer la convention "m_..." pour seulement "_..."
-        self.m_drive_motor = CANSparkMax(
+        self._drive_motor = CANSparkMax(
             drive_motor_port, CANSparkMax.MotorType.kBrushless
         )
-        configureLeader(self.m_drive_motor, "brake", False)
 
-        self.m_turning_motor = CANSparkMax(
+        self._turning_motor = CANSparkMax(
             turning_motor_port, CANSparkMax.MotorType.kBrushless
         )
-        configureLeader(self.m_turning_motor, "brake", turning_motor_inverted)
 
         # Restore SparkMax controllers to factory defaults
-        self.m_turning_motor.restoreFactoryDefaults()
-        self.m_drive_motor.restoreFactoryDefaults()
+        self._turning_motor.restoreFactoryDefaults()
+        self._drive_motor.restoreFactoryDefaults()
 
         # Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-        self.m_drive_encoder: SparkMaxRelativeEncoder = self.m_drive_motor.getEncoder()
-        self.m_turning_encoder = self.m_turning_motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
-        self.m_drive_PIDController = self.m_drive_motor.getPIDController()
-        self.m_turning_PIDController = self.m_turning_motor.getPIDController()
-        self.m_drive_PIDController.setFeedbackDevice(self.m_drive_encoder)
-        self.m_turning_PIDController.setFeedbackDevice(self.m_turning_encoder)
+        self._drive_encoder = self._drive_motor.getEncoder()
+        self._turning_encoder = self._turning_motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+        self._drive_PIDController = self._drive_motor.getPIDController()
+        self._turning_PIDController = self._turning_motor.getPIDController()
+        self._drive_PIDController.setFeedbackDevice(self._drive_encoder)
+        self._turning_PIDController.setFeedbackDevice(self._turning_encoder)
 
-        self.m_drive_encoder.setPositionConversionFactor(drive_encoder_position_conversion_factor)
-        self.m_drive_encoder.setVelocityConversionFactor(drive_encoder_velocity_conversion_factor)
-        self.m_turning_encoder.setPositionConversionFactor(turning_encoder_position_conversion_factor)
-        self.m_turning_encoder.setVelocityConversionFactor(turning_encoder_velocity_conversion_factor)
+        self._drive_encoder.setPositionConversionFactor(drive_encoder_position_conversion_factor)
+        self._drive_encoder.setVelocityConversionFactor(drive_encoder_velocity_conversion_factor)
+        self._turning_encoder.setPositionConversionFactor(turning_encoder_position_conversion_factor)
+        self._turning_encoder.setVelocityConversionFactor(turning_encoder_velocity_conversion_factor)
 
-        self.m_turning_encoder.setInverted(True)
+        self._turning_encoder.setInverted(True)
 
-        self.m_turning_PIDController.setPositionPIDWrappingEnabled(True)
-        self.m_turning_PIDController.setPositionPIDWrappingMinInput(turning_encoder_position_PID_min_input)
-        self.m_turning_PIDController.setPositionPIDWrappingMaxInput(turning_encoder_position_PID_max_input)
+        self._turning_PIDController.setPositionPIDWrappingEnabled(True)
+        self._turning_PIDController.setPositionPIDWrappingMinInput(turning_encoder_position_PID_min_input)
+        self._turning_PIDController.setPositionPIDWrappingMaxInput(turning_encoder_position_PID_max_input)
 
-        self.m_drive_PIDController.setP(self.driving_PID_P)
-        self.m_drive_PIDController.setI(self.driving_PID_I)
-        self.m_drive_PIDController.setD(self.driving_PID_D)
-        self.m_drive_PIDController.setFF(self.driving_PID_feedforward)
-        self.m_drive_PIDController.setOutputRange(self.driving_PID_output_min,
-                                                  self.driving_PID_output_max)
+        self._drive_PIDController.setP(self.driving_PID_P)
+        self._drive_PIDController.setI(self.driving_PID_I)
+        self._drive_PIDController.setD(self.driving_PID_D)
+        self._drive_PIDController.setFF(self.driving_PID_feedforward)
+        self._drive_PIDController.setOutputRange(self.driving_PID_output_min,
+                                                 self.driving_PID_output_max)
 
-        self.m_turning_PIDController.setP(self.turning_PID_P)
-        self.m_turning_PIDController.setI(self.turning_PID_I)
-        self.m_turning_PIDController.setD(self.turning_PID_D)
-        self.m_turning_PIDController.setFF(self.turning_PID_feedforward)
-        self.m_turning_PIDController.setOutputRange(self.turning_PID_output_min,
-                                                    self.turning_PID_output_max)
+        self._turning_PIDController.setP(self.turning_PID_P)
+        self._turning_PIDController.setI(self.turning_PID_I)
+        self._turning_PIDController.setD(self.turning_PID_D)
+        self._turning_PIDController.setFF(self.turning_PID_feedforward)
+        self._turning_PIDController.setOutputRange(self.turning_PID_output_min,
+                                                   self.turning_PID_output_max)
 
-        self.m_drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
-        self.m_turning_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
+        self._drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
+        self._turning_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
         # Save the SPARK MAX configurations. If a SPARK MAX browns out during
         # operation, it will maintain the above configurations.
-        self.m_drive_motor.burnFlash()
-        self.m_turning_motor.burnFlash()
+        self._drive_motor.burnFlash()
+        self._turning_motor.burnFlash()
 
-        self.m_desired_state = SwerveModuleState(0.0, Rotation2d())
-        self.m_chassis_angular_offset = chassis_angular_offset
-        self.m_desired_state.angle = Rotation2d(self.m_turning_encoder.getPosition())
-        self.m_drive_encoder.setPosition(0)
+        self._desired_state = SwerveModuleState(0.0, Rotation2d())
+        self._chassis_angular_offset = chassis_angular_offset
+        self._desired_state.angle = Rotation2d(self._turning_encoder.getPosition())
+        self._drive_encoder.setPosition(0)
 
         if RobotBase.isSimulation():
             # Simulation things
-            self.sim_drive_encoder = SparkMaxSim(self.m_drive_motor)
-            self.sim_turn_encoder = SparkMaxSim(self.m_turning_motor)
+            self.sim_drive_encoder = SparkMaxSim(self._drive_motor)
+            self.sim_turn_encoder = SparkMaxSim(self._turning_motor)
 
             self.drive_output: float = 0.0
             self.turn_output: float = 0.0
@@ -157,39 +155,42 @@ class SwerveModule:
             )
 
     def getVelocity(self) -> float:
-        return self.m_drive_encoder.getVelocity()
+        return self._drive_encoder.getVelocity()
 
     def getTurningRadians(self) -> float:
         """
         Returns radians
         """
-        return self.m_turning_encoder.getPosition()
+        return self._turning_encoder.getPosition()
 
     def getState(self) -> SwerveModuleState:
         return SwerveModuleState(
-            self.getVelocity(), Rotation2d(self.getTurningRadians())
+            self.getVelocity(), Rotation2d(self.getTurningRadians() - self._chassis_angular_offset)
         )
 
     def getModuleEncoderPosition(self) -> float:
-        return self.m_drive_encoder.getPosition()
+        return self._drive_encoder.getPosition()
 
     def getPosition(self) -> SwerveModulePosition:
         return SwerveModulePosition(
-            self.getModuleEncoderPosition(), Rotation2d(self.getTurningRadians())
+            self.getModuleEncoderPosition(), Rotation2d(self.getTurningRadians() - self._chassis_angular_offset)
         )
 
     def setDesiredState(self, desired_state: SwerveModuleState):
         corrected_desired_state = SwerveModuleState()
         corrected_desired_state.speed = desired_state.speed
-        corrected_desired_state.angle = desired_state.angle + Rotation2d(self.m_chassis_angular_offset)
+        corrected_desired_state.angle = desired_state.angle.rotateBy(Rotation2d.fromDegrees(self._chassis_angular_offset))
 
         optimized_desired_state = SwerveModuleState.optimize(corrected_desired_state,
-                                                             Rotation2d(self.m_turning_encoder.getPosition()))
-        self.m_drive_PIDController.setReference(optimized_desired_state.speed, CANSparkMax.ControlType.kVelocity)
-        self.m_turning_PIDController.setReference(optimized_desired_state.angle.radians(),
-                                                  CANSparkMax.ControlType.kPosition)
+                                                             Rotation2d(self._turning_encoder.getPosition()))
+        self._drive_PIDController.setReference(optimized_desired_state.speed, CANSparkMax.ControlType.kVelocity)
+        self._turning_PIDController.setReference(optimized_desired_state.angle.radians(),
+                                                 CANSparkMax.ControlType.kPosition)
 
-        self.m_desired_state = desired_state
+        self._desired_state = desired_state
+
+    def resetEncoders(self):
+        self._drive_encoder.setPosition(0)
 
     def simulationUpdate(self, period: float):
         self.sim_turn_motor.setInputVoltage(
