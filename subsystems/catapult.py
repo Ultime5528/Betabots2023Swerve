@@ -7,19 +7,15 @@ from utils.safesubsystem import SafeSubsystem
 
 
 class Catapult(SafeSubsystem):
-    up_speed = autoproperty(0.25)
-    down_speed = autoproperty(-0.25)
+    speed_up = autoproperty(0.25)
+    speed_down = autoproperty(-0.25)
 
     def __init__(self):
         super().__init__()
         self.limit_switch_catapult = DigitalInput(ports.catapult_limitswitch)
         self.piston_catapult = wpilib.DoubleSolenoid(PneumaticsModuleType.REVPH, ports.blocker_solenoid_forward,
                                                      ports.blocker_solenoid_reverse)
-        self.winch_motor = wpilib.Spark(ports.winch_motor)
-
-        if RobotBase.isSimulation():
-            self.piston_catapult = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.blocker_solenoid_forward,
-                                                         ports.blocker_solenoid_reverse)
+        self.winch_motor = wpilib.Spark(ports.catapult_motor)
 
     def lock(self):
         self.piston_catapult.set(wpilib.DoubleSolenoid.Value.kForward)
