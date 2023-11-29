@@ -4,6 +4,7 @@ import wpilib.simulation
 import ports
 from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
+import rev
 
     
 class Catapult(SafeSubsystem):
@@ -15,7 +16,8 @@ class Catapult(SafeSubsystem):
         self.limit_switch_catapult = DigitalInput(ports.catapult_limitswitch)
         self.piston_catapult = wpilib.DoubleSolenoid(PneumaticsModuleType.REVPH, ports.blocker_solenoid_forward,
                                                      ports.blocker_solenoid_reverse)
-        self.winch_motor = wpilib.Spark(ports.catapult_motor)
+        self.winch_motor = rev.CANSparkMax(ports.catapult_motor)
+        self.encoder = self.winch_motor.getEncoder()
 
     def lock(self):
         self.piston_catapult.set(wpilib.DoubleSolenoid.Value.kForward)
