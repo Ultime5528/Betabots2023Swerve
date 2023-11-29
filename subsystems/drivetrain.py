@@ -23,7 +23,6 @@ from utils.swerveutils import *
 select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empty"
 
 
-
 class Drivetrain(SafeSubsystem):
     width = autoproperty(0.68)
     length = autoproperty(0.68)
