@@ -38,6 +38,9 @@ class Drivetrain(SafeSubsystem):
     angular_offset_bl = autoproperty(math.pi)
     angular_offset_br = autoproperty(math.pi / 2)
 
+    acceptable_wheel_rotation = autoproperty(0.45)  # Will multiply pi, is radians. Tolerance in which the wheel can be in
+    wheel_flip_rotation = autoproperty(0.85)  # If wheel has this angle, wheel will lock and flip
+
     def __init__(self, period: float) -> None:
         super().__init__()
         self.period_seconds = period
@@ -149,10 +152,10 @@ class Drivetrain(SafeSubsystem):
             elapsed_time = current_time - self.prev_time
             angle_diff = angleDifference(input_translation_direction, self.current_translation_dir)
 
-            if angle_diff < 0.45 * math.pi:
+            if angle_diff < self.acceptable_wheel_rotation * math.pi:
                 self.current_translation_dir = stepTowardsCircular(self.current_translation_dir, input_translation_direction, direction_slew_rate * elapsed_time)
                 self.current_translation_mag = self.mag_limiter.calculate(input_translation_mag)
-            elif angle_diff > 0.85 * math.pi:
+            elif angle_diff > self.wheel_flip_rotation * math.pi:
                 if self.current_translation_mag > 1e-4:  # small number to avoid floating point errors
                     self.current_translation_mag = self.mag_limiter.calculate(0.0)
                 else:
