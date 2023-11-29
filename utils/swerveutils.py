@@ -38,14 +38,3 @@ def stepTowardsCircular(current, target, step_size):
 def angleDifference(angleA, angleB):
     difference = abs(angleA - angleB)
     return (2 * math.pi) - difference if difference > math.pi else difference
-
-
-def discretize(chassis_speeds: ChassisSpeeds, dtSeconds: float):
-    vx, vy, omega = chassis_speeds.vx, chassis_speeds.vy, chassis_speeds.omega
-    desired_delta_pose = Pose2d(
-        vx * dtSeconds, vy * dtSeconds, Rotation2d(omega * dtSeconds)
-    )
-    _twist = Pose2d().log(desired_delta_pose)
-    return ChassisSpeeds(
-        _twist.dx / dtSeconds, _twist.dy / dtSeconds, _twist.dtheta / dtSeconds
-    )
