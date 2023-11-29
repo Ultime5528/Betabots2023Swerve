@@ -35,6 +35,9 @@ class Catapult(SafeSubsystem):
     def moveDown(self):
         self.winch_motor.set(self.down_speed)
 
+    def motorIdle(self):
+        self.winch_motor.set(0)
+
     def stopArm(self):
         self.winch_motor.stopMotor()
 
