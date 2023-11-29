@@ -55,21 +55,25 @@ class Drivetrain(SafeSubsystem):
             ports.drivetrain_motor_turning_fl,
             self.angular_offset_fl
         )
+        wpilib.wait(4)
         self.swerve_module_fr = SwerveModule(
             ports.drivetrain_motor_driving_fr,
             ports.drivetrain_motor_turning_fr,
             self.angular_offset_fr
         )
+        wpilib.wait(4)
         self.swerve_module_bl = SwerveModule(
             ports.drivetrain_motor_driving_bl,
             ports.drivetrain_motor_turning_bl,
             self.angular_offset_bl
         )
+        wpilib.wait(4)
         self.swerve_module_br = SwerveModule(
             ports.drivetrain_motor_driving_br,
             ports.drivetrain_motor_turning_br,
             self.angular_offset_br
         )
+        wpilib.wait(4)
 
         # Gyro
         self._gyro = {
@@ -186,8 +190,8 @@ class Drivetrain(SafeSubsystem):
         )
 
         SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, self.swerve_module_fr.max_speed)
-        # self.swerve_module_fl.setDesiredState(swerve_module_states[0])
-        self.swerve_module_fr.setDesiredState(swerve_module_states[1])
+        self.swerve_module_fl.setDesiredState(swerve_module_states[0])
+        # self.swerve_module_fr.setDesiredState(swerve_module_states[1])
         # self.swerve_module_bl.setDesiredState(swerve_module_states[2])
         # self.swerve_module_br.setDesiredState(swerve_module_states[3])
 
