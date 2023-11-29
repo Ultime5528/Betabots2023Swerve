@@ -25,7 +25,7 @@ winch_motor = 8
 # PWM
 
 # DIO
-blocker_limitswitch: Final = 1
+catapult_limitswitch: Final = 1
 
 # PCM
 blocker_solenoid_forward: Final = 2
