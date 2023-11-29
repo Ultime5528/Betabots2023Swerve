@@ -5,7 +5,7 @@ import ports
 from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
 
-
+    
 class Catapult(SafeSubsystem):
     speed_up = autoproperty(0.25)
     speed_down = autoproperty(-0.25)
