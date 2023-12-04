@@ -28,7 +28,7 @@ module_max_angular_velocity = math.pi / 2  # 1/2 radian per second
 module_max_angular_acceleration = 2 * math.pi  # radians per second squared
 encoder_resolution = 4096
 # TODO Add robot specific parameters
-wheel_radius = 0.0381  # meters
+wheel_radius = 0.0762  # meters
 
 turn_motor_gear_ratio = 12.8  # //12 to 1
 turn_encoder_conversion_factor = 2 * math.pi / encoder_resolution
@@ -37,14 +37,11 @@ turn_encoder_distance_per_pulse = (2 * math.pi) / (
 )
 
 # 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-drive_motor_pinion_teeth = 14
+drive_motor_pinion_teeth = 13
 drive_motor_gear_ratio = (45.0 * 22) / (drive_motor_pinion_teeth * 15)
-drive_encoder_position_conversion_factor = (
-    math.pi * wheel_radius / drive_motor_gear_ratio
-)  # meters
-drive_encoder_velocity_conversion_factor = (
-    drive_encoder_position_conversion_factor / 60
-)  # meters per second
+
+drive_encoder_position_conversion_factor = math.pi * wheel_radius / drive_motor_gear_ratio  # meters
+drive_encoder_velocity_conversion_factor = drive_encoder_position_conversion_factor / 60  # meters per second
 drive_motor_free_rps = 5676 / 60  # Neo motor max free RPM into rotations per second
 drive_wheel_free_rps = drive_motor_free_rps * (2 * math.pi)
 driving_PID_feedforward = 1 / drive_wheel_free_rps
@@ -57,14 +54,14 @@ turning_encoder_position_PID_max_input = turning_encoder_position_conversion_fac
 
 
 class SwerveModule:
-    max_speed = autoproperty(0.25)
+    max_speed = autoproperty(3.0)
 
-    driving_PID_P = autoproperty(0.04)
+    driving_PID_P = autoproperty(0.02)
     driving_PID_I = autoproperty(0.0)
     driving_PID_D = autoproperty(0.0)
     driving_PID_feedforward = autoproperty(1 / drive_wheel_free_rps)
 
-    turning_PID_P = autoproperty(1.0)
+    turning_PID_P = autoproperty(0.02)
     turning_PID_I = autoproperty(0.0)
     turning_PID_D = autoproperty(0.0)
     turning_PID_feedforward = autoproperty(0.0)
@@ -145,6 +142,8 @@ class SwerveModule:
 
         self._drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
         self._turning_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
+        self._drive_motor.setSmartCurrentLimit(25)
+        self._turning_motor.setSmartCurrentLimit(25)
         # Save the SPARK MAX configurations. If a SPARK MAX browns out during
         # operation, it will maintain the above configurations.
         self._drive_motor.burnFlash()
@@ -206,9 +205,7 @@ class SwerveModule:
     def setDesiredState(self, desired_state: SwerveModuleState):
         corrected_desired_state = SwerveModuleState()
         corrected_desired_state.speed = desired_state.speed
-        corrected_desired_state.angle = desired_state.angle.rotateBy(
-            Rotation2d.fromDegrees(self._chassis_angular_offset)
-        )
+        corrected_desired_state.angle = desired_state.angle.rotateBy(Rotation2d(self._chassis_angular_offset))
 
         optimized_desired_state = SwerveModuleState.optimize(
             corrected_desired_state, Rotation2d(self._turning_encoder.getPosition())
