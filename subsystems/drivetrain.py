@@ -191,9 +191,9 @@ class Drivetrain(SafeSubsystem):
 
         SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, self.swerve_module_fr.max_speed)
         self.swerve_module_fl.setDesiredState(swerve_module_states[0])
-        # self.swerve_module_fr.setDesiredState(swerve_module_states[1])
-        # self.swerve_module_bl.setDesiredState(swerve_module_states[2])
-        # self.swerve_module_br.setDesiredState(swerve_module_states[3])
+        self.swerve_module_fr.setDesiredState(swerve_module_states[1])
+        self.swerve_module_bl.setDesiredState(swerve_module_states[2])
+        self.swerve_module_br.setDesiredState(swerve_module_states[3])
 
     def getRotation(self):
         return self._gyro.getRotation2d()
