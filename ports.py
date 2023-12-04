@@ -25,8 +25,8 @@ catapult_motor = 8
 # PWM
 
 # DIO
-catapult_limitswitch: Final = 1
+catapult_limitswitch: Final = 0
 
 # PCM
-blocker_solenoid_forward: Final = 2
-blocker_solenoid_reverse: Final = 3
+catapult_solenoid_forward: Final = 0
+catapult_solenoid_reverse: Final = 1

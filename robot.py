@@ -32,8 +32,8 @@ class Robot(commands2.TimedCommandRobot):
             Drive(self.drivetrain, self.xboxremote)
         )
 
-        wpilib.SmartDashboard.putData("Close", Lock(self.catapult))
-        wpilib.SmartDashboard.putData("Open", Unlock(self.catapult))
+        wpilib.SmartDashboard.putData("Lock", Lock(self.catapult))
+        wpilib.SmartDashboard.putData("Unlock", Unlock(self.catapult))
         wpilib.SmartDashboard.putData("ResetLauncher", ResetLauncher(self.catapult))
 
 if __name__ == "__main__":
