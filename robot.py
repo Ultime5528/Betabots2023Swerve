@@ -7,6 +7,7 @@ import wpilib
 from commands2 import Trigger
 from wpilib.event import BooleanEvent
 
+from commands.resetlauncher import ResetLauncher
 from commands.lock import Lock
 from commands.drive import Drive
 from commands.unlock import Unlock
@@ -33,7 +34,7 @@ class Robot(commands2.TimedCommandRobot):
 
         wpilib.SmartDashboard.putData("Close", Lock(self.catapult))
         wpilib.SmartDashboard.putData("Open", Unlock(self.catapult))
-
+        wpilib.SmartDashboard.putData("ResetLauncher", ResetLauncher(self.catapult))
 
 if __name__ == "__main__":
     wpilib.run(Robot)

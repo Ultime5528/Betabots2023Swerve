@@ -1,7 +1,5 @@
-from utils.property import autoproperty
 from utils.safecommand import SafeCommand
 from subsystems.catapult import Catapult
-import wpilib
 
 
 class ResetLauncher(SafeCommand):
@@ -17,5 +15,4 @@ class ResetLauncher(SafeCommand):
         return self.catapult.isArmDown()
 
     def end(self, interrupted: bool) -> None:
-        self.catapult.motorIdle()
-    
+        self.catapult.stopMotor()
