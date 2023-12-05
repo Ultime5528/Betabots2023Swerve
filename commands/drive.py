@@ -29,7 +29,6 @@ class Drive(SafeCommand):
             self.m_yspeedLimiter.calculate(self.xbox_remote.getLeftX())
             * -1
         )
-        # TODO print joystick to see whats up with not being able to turn both ways
         rot = (
             self.m_rotLimiter.calculate(self.xbox_remote.getRightX())
             * -1

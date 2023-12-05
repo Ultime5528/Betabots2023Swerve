@@ -173,7 +173,7 @@ class SwerveModule:
                 turn_motor_gear_ratio,
             )
             self.sim_drive_motor = FlywheelSim(
-                LinearSystemId.identifyVelocitySystemMeters(2, 1.24),
+                LinearSystemId.identifyVelocitySystemMeters(3, 1.24),
                 DCMotor.NEO550(1),
                 drive_motor_gear_ratio,
             )

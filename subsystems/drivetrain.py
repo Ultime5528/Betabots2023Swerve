@@ -245,6 +245,9 @@ class Drivetrain(SafeSubsystem):
     def getPose(self):
         return self.swerve_estimator.getEstimatedPosition()
 
+    def getSwerveEstimator(self):
+        return self.swerve_estimator
+
     def setXFormation(self):
         """
         Points all the wheels into the center to prevent movement

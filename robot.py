@@ -25,7 +25,7 @@ class Robot(commands2.TimedCommandRobot):
             Drive(self.drivetrain, self.xboxremote)
         )
 
-        wpilib.SmartDashboard.putData("DriveDistance", DriveDistance(self.drivetrain, Pose2d(4, 4, 0), 0.2, 0.2))
+        wpilib.SmartDashboard.putData("DriveDistance", DriveDistance(self.drivetrain, Pose2d(4, 4, 0), 2))
 
 
 if __name__ == "__main__":
