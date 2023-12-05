@@ -8,7 +8,7 @@ from utils.safecommand import SafeCommand
 
 
 class DriveDistance(SafeCommand):
-    max_error = autoproperty(0.2)
+    max_error = autoproperty(0.3)
 
     def __init__(self, drivetrain: Drivetrain, pose: Pose2d, x_speed, y_speed):
         super().__init__()
@@ -24,6 +24,11 @@ class DriveDistance(SafeCommand):
         self.addRequirements(drivetrain)
 
     def execute(self):
+        """
+        Faire une fonction dans drivetrain qui retourne l'estimation position.
+        L'appeler une seule fois, garder dans une variable, et prendre x et y.
+        """
+
         self.x_error = (
             self.x_distance - self.drivetrain.swerve_estimator.getEstimatedPosition().x
         )
@@ -39,7 +44,7 @@ class DriveDistance(SafeCommand):
         if abs(self.y_error) <= self.max_error:
             self.vy = 0
 
-        self.drivetrain.drive(self.vy, self.vy, 0, True)
+        self.drivetrain.drive(self.vx, self.vy, 0, True)
 
     def isFinished(self) -> bool:
         return self.vx == 0 and self.vy == 0
