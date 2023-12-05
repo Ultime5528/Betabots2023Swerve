@@ -8,7 +8,7 @@ from utils.safecommand import SafeCommand
 
 
 class DriveDistance(SafeCommand):
-    max_error = autoproperty(0.1)
+    max_error = autoproperty(0.2)
 
     def __init__(self, drivetrain: Drivetrain, pose: Pose2d, x_speed, y_speed):
         super().__init__()

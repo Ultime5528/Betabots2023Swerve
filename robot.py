@@ -7,6 +7,8 @@ import wpilib
 
 from commands.drive import Drive
 from subsystems.drivetrain import Drivetrain
+from commands.drivedistance import DriveDistance
+from wpimath.geometry import Pose2d
 
 
 class Robot(commands2.TimedCommandRobot):
@@ -22,6 +24,8 @@ class Robot(commands2.TimedCommandRobot):
         self.drivetrain.setDefaultCommand(
             Drive(self.drivetrain, self.xboxremote)
         )
+
+        wpilib.SmartDashboard.putData("DriveDistance", DriveDistance(self.drivetrain, Pose2d(4, 4, 0), 0.2, 0.2))
 
 
 if __name__ == "__main__":
