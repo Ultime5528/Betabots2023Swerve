@@ -7,6 +7,7 @@ import wpilib
 from commands2 import Trigger
 from wpilib.event import BooleanEvent
 
+from commands.charge import Charge
 from commands.lock import Lock
 from commands.drive import Drive
 from commands.unlock import Unlock
@@ -33,6 +34,9 @@ class Robot(commands2.TimedCommandRobot):
 
         wpilib.SmartDashboard.putData("Close", Lock(self.catapult))
         wpilib.SmartDashboard.putData("Open", Unlock(self.catapult))
+        wpilib.SmartDashboard.putData("Charge1", Charge(self.catapult, 1))
+        wpilib.SmartDashboard.putData("Charge2", Charge(self.catapult, 2))
+        wpilib.SmartDashboard.putData("Charge3", Charge(self.catapult, 3))
 
 
 if __name__ == "__main__":
