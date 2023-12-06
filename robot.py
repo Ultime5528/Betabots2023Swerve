@@ -30,7 +30,6 @@ class Robot(commands2.TimedCommandRobot):
 
         self.catapult = Catapult()
 
-
         self.drivetrain.setDefaultCommand(
             Drive(self.drivetrain, self.xboxremote)
         )

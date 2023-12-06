@@ -22,9 +22,11 @@ drivetrain_motor_driving_br: Final = 2
 drivetrain_motor_turning_br: Final = 1
 
 # PWM
+catapult_servo: Final = 0
 
 # DIO
 catapult_limitswitch: Final = 0
+
 
 # PCM
 catapult_solenoid_forward: Final = 0
