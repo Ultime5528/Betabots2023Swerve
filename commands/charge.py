@@ -20,7 +20,11 @@ class Charge(SafeCommand):
         }[distanceWanted]
 
     def execute(self) -> None:
-        self.catapult.moveUp()
+        move_down = self.catapult.encoder.getPosition() > self.get_distance()
+        if move_down:
+            self.catapult.moveDown()
+        else:
+            self.catapult.moveUp()
 
     def isFinished(self) -> bool:
         return abs(self.catapult.encoder.getPosition() - self.get_distance()) < self.threshold
