@@ -24,3 +24,5 @@ class Load(SafeCommand):
 
     def end(self, interrupted: bool) -> None:
         self.catapult.close()
+        self.timer.stop()
+        self.timer.reset()
