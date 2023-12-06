@@ -37,6 +37,7 @@ class Robot(commands2.TimedCommandRobot):
         wpilib.SmartDashboard.putData("Unlock", Unlock(self.catapult))
         wpilib.SmartDashboard.putData("ResetLauncher", ResetArm(self.catapult))
         wpilib.SmartDashboard.putData("Launch", Launch(self.catapult))
+        wpilib.SmartDashboard.putData("Launch uninterrupt", Launch(self.catapult))
 
 
 if __name__ == "__main__":

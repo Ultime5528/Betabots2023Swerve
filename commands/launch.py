@@ -1,4 +1,5 @@
-from commands2 import SequentialCommandGroup
+import wpilib
+from commands2 import SequentialCommandGroup, WaitCommand
 
 from subsystems.catapult import Catapult
 from commands.resetarm import ResetArm
@@ -12,7 +13,7 @@ class Launch(SequentialCommandGroup, SafeMixin):
     def __init__(self, catapult: Catapult):
         super().__init__(
             Unlock(catapult),
+            WaitCommand(0.5),
             ResetArm(catapult),
             Lock(catapult),
         )
-        self.setName("Launch")
