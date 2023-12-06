@@ -1,5 +1,6 @@
 from commands2 import SequentialCommandGroup
 
+from commands.load import Load
 from subsystems.catapult import Catapult
 from commands.resetarm import ResetArm
 from commands.unlock import Unlock
@@ -14,5 +15,6 @@ class Launch(SequentialCommandGroup, SafeMixin):
             Unlock(catapult),
             ResetArm(catapult),
             Lock(catapult),
+            Load(catapult)
         )
         self.setName("Launch")
