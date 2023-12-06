@@ -14,6 +14,8 @@ from commands.drive import Drive
 from commands.unlock import Unlock
 from subsystems.catapult import Catapult
 from subsystems.drivetrain import Drivetrain
+from commands.drivedistance import DriveDistance
+from wpimath.geometry import Pose2d
 
 
 class Robot(commands2.TimedCommandRobot):
