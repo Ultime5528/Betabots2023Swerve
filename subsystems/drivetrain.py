@@ -218,7 +218,7 @@ class Drivetrain(SafeSubsystem):
 
         x_speed *= self.swerve_module_fr.max_speed
         y_speed *= self.swerve_module_fr.max_speed
-        rot_speed *= self.current_rotation * self.max_angular_speed
+        rot_speed = self.current_rotation * self.max_angular_speed
 
         swerve_module_states = self.swervedrive_kinematics.toSwerveModuleStates(
             ChassisSpeeds.fromFieldRelativeSpeeds(
