@@ -12,6 +12,14 @@ Order port numbers, ex:
 """
 
 # CAN
+drivetrain_motor_driving_fl: Final = 5
+drivetrain_motor_turning_fl: Final = 6
+drivetrain_motor_driving_fr: Final = 8
+drivetrain_motor_turning_fr: Final = 7
+drivetrain_motor_driving_bl: Final = 4
+drivetrain_motor_turning_bl: Final = 3
+drivetrain_motor_driving_br: Final = 2
+drivetrain_motor_turning_br: Final = 1
 
 # PWM
 
