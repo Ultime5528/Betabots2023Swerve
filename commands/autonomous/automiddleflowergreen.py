@@ -13,8 +13,10 @@ from subsystems.drivetrain import Drivetrain
 
 from subsystems.catapult import Catapult
 
+from utils.safecommand import SafeMixin
 
-class AutoMiddleFlowerGreen(SequentialCommandGroup):
+
+class AutoMiddleFlowerGreen(SequentialCommandGroup, SafeMixin):
     def __init__(self, drivetrain: Drivetrain, catapult: Catapult):
         super().__init__(
             ParallelCommandGroup(
@@ -24,3 +26,4 @@ class AutoMiddleFlowerGreen(SequentialCommandGroup):
             ),
             Launch(catapult)
         )
+        self.addRequirements(drivetrain, catapult)
