@@ -40,7 +40,10 @@ class Robot(commands2.TimedCommandRobot):
         wpilib.SmartDashboard.putData("Unlock", Unlock(self.catapult))
         wpilib.SmartDashboard.putData("ResetLauncher", ResetArm(self.catapult))
         wpilib.SmartDashboard.putData("Launch", Launch(self.catapult))
-        wpilib.SmartDashboard.putData("Load", Load(self.catapult))
+        wpilib.SmartDashboard.putData("LoadBall", Load(self.catapult))
+        wpilib.SmartDashboard.putData("Charge1", Charge(self.catapult, 1))
+        wpilib.SmartDashboard.putData("Charge2", Charge(self.catapult, 2))
+        wpilib.SmartDashboard.putData("Charge3", Charge(self.catapult, 3))
 
 
 if __name__ == "__main__":

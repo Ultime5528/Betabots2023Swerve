@@ -20,7 +20,7 @@ drivetrain_motor_driving_bl: Final = 4
 drivetrain_motor_turning_bl: Final = 3
 drivetrain_motor_driving_br: Final = 2
 drivetrain_motor_turning_br: Final = 1
-
+catapult_motor: Final = 9
 # PWM
 catapult_servo: Final = 0
 

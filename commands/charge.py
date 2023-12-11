@@ -4,10 +4,11 @@ from utils.safecommand import SafeCommand
 
 
 class Charge(SafeCommand):
-    distance1 = autoproperty(0.0)
-    distance2 = autoproperty(0.0)
-    distance3 = autoproperty(0.0)
-    threshold = autoproperty(0.0)
+    # Multiply wanted turns by 36 for gearbox
+    distance1 = autoproperty(36.0)  # 1 * 36
+    distance2 = autoproperty(54.0)  # 1.5 * 36
+    distance3 = autoproperty(72.0)  # 2 * 36
+    threshold = autoproperty(0.1)
 
     def __init__(self, catapult: Catapult, distanceWanted: int):
         super().__init__()
