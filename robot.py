@@ -3,12 +3,11 @@
 import commands2.button
 import wpilib
 
-from commands.launch import Launch
-from commands.resetarm import ResetArm
-from commands.lock import Lock
 from commands.drive import Drive
+from commands.launch import Launch
 from commands.load import Load
 from commands.lock import Lock
+from commands.resetarm import ResetArm
 from commands.unlock import Unlock
 from subsystems.catapult import Catapult
 from subsystems.drivetrain import Drivetrain

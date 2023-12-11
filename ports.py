@@ -28,7 +28,6 @@ catapult_servo: Final = 0
 # DIO
 catapult_limitswitch: Final = 0
 
-
 # PCM
 catapult_solenoid_forward: Final = 0
 catapult_solenoid_reverse: Final = 1
