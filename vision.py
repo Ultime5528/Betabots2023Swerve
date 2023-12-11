@@ -5,6 +5,7 @@ import numpy as np
 from robotpy_apriltag import AprilTagDetector, AprilTagPoseEstimator
 
 from utils.property import autoproperty
+from ntcore import NetworkTable, NetworkTableInstance
 
 
 def get_apriltag_detector_and_estimator(frame_size):
@@ -18,7 +19,7 @@ def get_apriltag_detector_and_estimator(frame_size):
     return detector, estimator
 
 
-def draw_tag(frame, result, color: tuple(int, int, int)):
+def draw_tag(frame, result, color: tuple[int, int, int]):
     assert frame is not None
     assert result is not None
     tag_id, pose, center = result
@@ -58,14 +59,13 @@ def process_apriltag(estimator: AprilTagPoseEstimator, tag: robotpy_apriltag.Apr
 
 
 def main():
-    NetworkTables.initialize("10.55.28.2")
     instance = NetworkTableInstance.getDefault()
     vision_table = instance.getTable("vision")
     tag_x = vision_table.getDoubleTopic("tag_x").publish()
     tag_y = vision_table.getDoubleTopic("tag_y").publish()
     tag_rot = vision_table.getDoubleTopic("tag_rot").publish()
 
-min_detection_threshold = autoproperty(100)
+    min_detection_threshold = autoproperty(100)
     CameraServer.enableLogging()
 
     # Capture from the first USB Camera on the system
@@ -73,6 +73,7 @@ min_detection_threshold = autoproperty(100)
     camera = CameraServer.startAutomaticCapture()
     camera.setResolution(*resolution)
 
+        
     # Get a CvSink. This will capture images from the camera
     cv_sink = CameraServer.getVideo()
     output_stream = CameraServer.putVideo("Video", *resolution)
@@ -99,13 +100,17 @@ min_detection_threshold = autoproperty(100)
         ]
         results = [process_apriltag(estimator, tag) for tag in filtered_tags]
 
-        most_centered = min(results, key=lambda x: x[2].x)
+        if results:
+            most_centered = min(results, key=lambda x: x[2].x)
 
-        img = draw_tag(img, most_centered, (0, 255, 0))
-        for result in results:
-            img = draw_tag(img, result, (0,0,255))
+            img = draw_tag(img, most_centered, (0, 255, 0))
+            for result in results:
+                img = draw_tag(img, result, (0,0,255))
 
-        tag_x.set(most_centered[2].x)
-        tag_y.set(most_centered[2].y)
-        tag_rot.set(most_centered[1].getRotation())
+            tag_x.set(most_centered[2].x)
+            tag_y.set(most_centered[2].y)
+            tag_rot.set(most_centered[1].rotation())
         output_stream.putFrame(img)
+
+if __name__ == '__main__':
+    main()
