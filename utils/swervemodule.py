@@ -219,9 +219,6 @@ class SwerveModule:
 
         self._desired_state = desired_state
 
-    def resetEncoders(self):
-        self._drive_encoder.setPosition(0)
-
     def simulationUpdate(self, period: float):
         self.sim_turn_motor.setInputVoltage(
             self.sim_turn_encoder.getVelocity()

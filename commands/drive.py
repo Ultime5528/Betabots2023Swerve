@@ -31,7 +31,6 @@ class Drive(SafeCommand):
         )
         rot = (
             self.m_rotLimiter.calculate(self.xbox_remote.getRightX())
-            * -1
         )
         
         self.drivetrain.drive(x_speed, y_speed, rot, True, False)

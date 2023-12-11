@@ -19,12 +19,13 @@ from gyro import ADIS16448, ADIS16470, ADXRS, Empty, NavX
 from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
 from utils.swervemodule import SwerveModule
-from utils.swerveutils import *
+from utils.swerveutils import wrapAngle, stepTowardsCircular, angleDifference
 
 select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empty"
 
 
 class Drivetrain(SafeSubsystem):
+    motor_creation_delay = autoproperty(4)
     width = autoproperty(0.68)
     length = autoproperty(0.68)
     max_angular_speed = autoproperty(math.pi)
@@ -218,7 +219,7 @@ class Drivetrain(SafeSubsystem):
 
         x_speed *= self.swerve_module_fr.max_speed
         y_speed *= self.swerve_module_fr.max_speed
-        rot_speed *= self.current_rotation * self.max_angular_speed
+        rot_speed = self.current_rotation * self.max_angular_speed
 
         swerve_module_states = self.swervedrive_kinematics.toSwerveModuleStates(
             ChassisSpeeds.fromFieldRelativeSpeeds(
