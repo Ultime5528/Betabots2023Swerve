@@ -78,7 +78,6 @@ class SwerveModule:
         chassis_angular_offset: float,
         turning_motor_inverted: bool = False,
     ):
-        # TODO Changer la convention "m_..." pour seulement "_..."
         self._drive_motor = CANSparkMax(
             drive_motor_port, CANSparkMax.MotorType.kBrushless
         )

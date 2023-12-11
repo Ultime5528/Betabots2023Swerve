@@ -6,7 +6,7 @@ import wpiutil
 from wpilib import RobotBase, RobotController
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Pose2d, Translation2d
+from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from wpimath.kinematics import (
     ChassisSpeeds,
     SwerveDrive4Kinematics,
@@ -52,53 +52,32 @@ class Drivetrain(SafeSubsystem):
         self.motor_bl_loc = Translation2d(-self.width / 2, self.length / 2)
         self.motor_br_loc = Translation2d(-self.width / 2, -self.length / 2)
 
-        if RobotBase.isReal():
-            self.swerve_module_fl = SwerveModule(
-                ports.drivetrain_motor_driving_fl,
-                ports.drivetrain_motor_turning_fl,
-                self.angular_offset_fl,
-            )
-            wpilib.wait(4)
-            self.swerve_module_fr = SwerveModule(
-                ports.drivetrain_motor_driving_fr,
-                ports.drivetrain_motor_turning_fr,
-                self.angular_offset_fr,
-            )
-            wpilib.wait(4)
-            self.swerve_module_bl = SwerveModule(
-                ports.drivetrain_motor_driving_bl,
-                ports.drivetrain_motor_turning_bl,
-                self.angular_offset_bl,
-            )
-            wpilib.wait(4)
-            self.swerve_module_br = SwerveModule(
-                ports.drivetrain_motor_driving_br,
-                ports.drivetrain_motor_turning_br,
-                self.angular_offset_br,
-            )
-            wpilib.wait(4)
-        else:
+        wait_time = 4 if RobotBase.isReal() else 0.0
 
-            self.swerve_module_fl = SwerveModule(
-                ports.drivetrain_motor_driving_fl,
-                ports.drivetrain_motor_turning_fl,
-                self.angular_offset_fl,
-            )
-            self.swerve_module_fr = SwerveModule(
-                ports.drivetrain_motor_driving_fr,
-                ports.drivetrain_motor_turning_fr,
-                self.angular_offset_fr,
-            )
-            self.swerve_module_bl = SwerveModule(
-                ports.drivetrain_motor_driving_bl,
-                ports.drivetrain_motor_turning_bl,
-                self.angular_offset_bl,
-            )
-            self.swerve_module_br = SwerveModule(
-                ports.drivetrain_motor_driving_br,
-                ports.drivetrain_motor_turning_br,
-                self.angular_offset_br,
-            )
+        self.swerve_module_fl = SwerveModule(
+            ports.drivetrain_motor_driving_fl,
+            ports.drivetrain_motor_turning_fl,
+            self.angular_offset_fl,
+        )
+        wpilib.wait(wait_time)
+        self.swerve_module_fr = SwerveModule(
+            ports.drivetrain_motor_driving_fr,
+            ports.drivetrain_motor_turning_fr,
+            self.angular_offset_fr,
+        )
+        wpilib.wait(wait_time)
+        self.swerve_module_bl = SwerveModule(
+            ports.drivetrain_motor_driving_bl,
+            ports.drivetrain_motor_turning_bl,
+            self.angular_offset_bl,
+        )
+        wpilib.wait(wait_time)
+        self.swerve_module_br = SwerveModule(
+            ports.drivetrain_motor_driving_br,
+            ports.drivetrain_motor_turning_br,
+            self.angular_offset_br,
+        )
+        wpilib.wait(wait_time)
 
         # Gyro
         self._gyro = {
@@ -148,7 +127,7 @@ class Drivetrain(SafeSubsystem):
         x_speed_input: float,
         y_speed_input: float,
         rot_speed: float,
-        is_field_relative: bool,
+        is_field_relative: bool = True,
         rate_limiter: bool = True,
     ):
         x_speed = x_speed_input
@@ -245,9 +224,6 @@ class Drivetrain(SafeSubsystem):
 
     def getPose(self):
         return self.swerve_estimator.getEstimatedPosition()
-
-    def getSwerveEstimator(self):
-        return self.swerve_estimator
 
     def setXFormation(self):
         """
