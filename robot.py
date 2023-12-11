@@ -3,6 +3,9 @@
 import commands2.button
 import wpilib
 
+from commands.launch import Launch
+from commands.resetarm import ResetArm
+from commands.lock import Lock
 from commands.drive import Drive
 from commands.load import Load
 from commands.lock import Lock
@@ -30,6 +33,9 @@ class Robot(commands2.TimedCommandRobot):
         wpilib.SmartDashboard.putData("Lock", Lock(self.catapult))
         wpilib.SmartDashboard.putData("Unlock", Unlock(self.catapult))
         wpilib.SmartDashboard.putData("Load", Load(self.catapult))
+        wpilib.SmartDashboard.putData("ResetLauncher", ResetArm(self.catapult))
+        wpilib.SmartDashboard.putData("Launch", Launch(self.catapult))
+        wpilib.SmartDashboard.putData("Launch uninterrupt", Launch(self.catapult))
 
 
 if __name__ == "__main__":

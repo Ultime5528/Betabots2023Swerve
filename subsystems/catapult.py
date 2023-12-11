@@ -6,7 +6,9 @@ from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
 import rev
 
-    
+from utils.sparkmaxsim import SparkMaxSim
+
+
 class Catapult(SafeSubsystem):
     speed_up = autoproperty(0.25)
     speed_down = autoproperty(-0.25)
@@ -26,6 +28,9 @@ class Catapult(SafeSubsystem):
         else:
             self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
                                                 ports.catapult_solenoid_reverse)
+
+        if RobotBase.isSimulation():
+            self.sim_motor = SparkMaxSim(self.motor)
 
     def close(self):
         self.servo.setAngle(self.servo_angle_close)
@@ -56,3 +61,6 @@ class Catapult(SafeSubsystem):
 
     def isArmDown(self):
         return self.switch.get()
+
+    def simulationPeriodic(self) -> None:
+        self.sim_motor.setVelocity(self.motor.get())
