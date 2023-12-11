@@ -18,12 +18,13 @@ from gyro import ADIS16448, ADIS16470, ADXRS, Empty, NavX
 from utils.property import autoproperty
 from utils.safesubsystem import SafeSubsystem
 from utils.swervemodule import SwerveModule
-from utils.swerveutils import *
+from utils.swerveutils import wrapAngle, stepTowardsCircular, angleDifference
 
 select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empty"
 
 
 class Drivetrain(SafeSubsystem):
+    motor_creation_delay = autoproperty(4)
     width = autoproperty(0.68)
     length = autoproperty(0.68)
     max_angular_speed = autoproperty(math.pi)
@@ -55,25 +56,25 @@ class Drivetrain(SafeSubsystem):
             ports.drivetrain_motor_turning_fl,
             self.angular_offset_fl
         )
-        wpilib.wait(4)
+        wpilib.wait(self.motor_creation_delay)
         self.swerve_module_fr = SwerveModule(
             ports.drivetrain_motor_driving_fr,
             ports.drivetrain_motor_turning_fr,
             self.angular_offset_fr
         )
-        wpilib.wait(4)
+        wpilib.wait(self.motor_creation_delay)
         self.swerve_module_bl = SwerveModule(
             ports.drivetrain_motor_driving_bl,
             ports.drivetrain_motor_turning_bl,
             self.angular_offset_bl
         )
-        wpilib.wait(4)
+        wpilib.wait(self.motor_creation_delay)
         self.swerve_module_br = SwerveModule(
             ports.drivetrain_motor_driving_br,
             ports.drivetrain_motor_turning_br,
             self.angular_offset_br
         )
-        wpilib.wait(4)
+        wpilib.wait(self.motor_creation_delay)
 
         # Gyro
         self._gyro = {

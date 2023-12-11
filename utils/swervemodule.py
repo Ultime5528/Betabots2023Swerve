@@ -192,7 +192,7 @@ class SwerveModule:
 
         self._desired_state = desired_state
 
-    def resetEncoders(self):
+    def resetEncoder(self):
         self._drive_encoder.setPosition(0)
 
     def simulationUpdate(self, period: float):
