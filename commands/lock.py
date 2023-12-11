@@ -15,18 +15,14 @@ class Lock(SafeCommand):
         self.timer = wpilib.Timer()
 
     def initialize(self) -> None:
-        self.timer.stop()
         self.timer.reset()
+        self.timer.start()
 
     def execute(self) -> None:
-        # unroll
-        if self.catapult.isArmDown():
-            # stop unroll
-            self.catapult.lock()
-            self.timer.start()
+        self.catapult.lock()
 
     def isFinished(self) -> bool:
         return self.timer.get() >= self.timeout
 
     def end(self, interrupted: bool) -> None:
-        self.catapult.idle()
+        self.catapult.stopLocker()
