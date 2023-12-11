@@ -18,6 +18,8 @@ from subsystems.drivetrain import Drivetrain
 
 class Robot(commands2.TimedCommandRobot):
     def robotInit(self):
+        wpilib.CameraServer.launch("vision.py:main")
+
         wpilib.LiveWindow.enableAllTelemetry()
         wpilib.LiveWindow.setEnabled(True)
         wpilib.DriverStation.silenceJoystickConnectionWarning(True)
