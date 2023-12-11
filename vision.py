@@ -62,7 +62,8 @@ def main():
     instance = NetworkTableInstance.getDefault()
     vision_table = instance.getTable("vision")
     tag_x = vision_table.getDoubleTopic("tag_x").publish()
-   tag_y = vision_table.getDoubleTopic("tag_y").publish()
+    tag_y = vision_table.getDoubleTopic("tag_y").publish()
+    tag_rot = vision_table.getDoubleTopic("tag_rot").publish()
 
 min_detection_threshold = autoproperty(100)
     CameraServer.enableLogging()
@@ -106,4 +107,5 @@ min_detection_threshold = autoproperty(100)
 
         tag_x.set(most_centered[2].x)
         tag_y.set(most_centered[2].y)
+        tag_rot.set(most_centered[1].rotation)
         output_stream.putFrame(img)
