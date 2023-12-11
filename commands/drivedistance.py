@@ -50,13 +50,8 @@ class DriveDistance(SafeCommand):
         current_x = current_position.x
         current_y = current_position.y
 
-
-        self.error_x = (
-                self.goal_x - current_x
-        )
-        self.error_y = (
-                self.goal_y - current_y
-        )
+        self.error_x = self.goal_x - current_x
+        self.error_y = self.goal_y - current_y
 
         moved_x = abs(current_x - self.initial_position.x)
         moved_y = abs(current_y - self.initial_position.y)
