@@ -18,11 +18,11 @@ def get_apriltag_detector_and_estimator(frame_size):
     return detector, estimator
 
 
-def draw_tag(frame, result):
+def draw_tag(frame, result, color: tuple(int, int, int)):
     assert frame is not None
     assert result is not None
     tag_id, pose, center = result
-    cv2.circle(frame, (int(center.x), int(center.y)), 50, (255, 0, 255), 3)
+    cv2.circle(frame, (int(center.x), int(center.y)), 50, color, 3)
     msg = f"Tag ID: {tag_id} Pose: {pose}"
     cv2.putText(
         frame, msg, (100, 50 * 1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2
@@ -58,7 +58,13 @@ def process_apriltag(estimator: AprilTagPoseEstimator, tag: robotpy_apriltag.Apr
 
 
 def main():
-    min_detection_threshold = autoproperty(100)
+    NetworkTables.initialize("10.55.28.2")
+    instance = NetworkTableInstance.getDefault()
+    vision_table = instance.getTable("vision")
+    tag_x = vision_table.getDoubleTopic("tag_x").publish()
+   tag_y = vision_table.getDoubleTopic("tag_y").publish()
+
+min_detection_threshold = autoproperty(100)
     CameraServer.enableLogging()
 
     # Capture from the first USB Camera on the system
@@ -92,7 +98,12 @@ def main():
         ]
         results = [process_apriltag(estimator, tag) for tag in filtered_tags]
 
-        for result in results:
-            img = draw_tag(img, result)
+        most_centered = min(results, key=lambda x: x[2].x)
 
+        img = draw_tag(img, most_centered, (0, 255, 0))
+        for result in results:
+            img = draw_tag(img, result, (0,0,255))
+
+        tag_x.set(most_centered[2].x)
+        tag_y.set(most_centered[2].y)
         output_stream.putFrame(img)
