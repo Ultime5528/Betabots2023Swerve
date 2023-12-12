@@ -19,12 +19,8 @@ class Catapult(SafeSubsystem):
         self.motor = rev.CANSparkMax(ports.catapult_motor, rev.CANSparkMax.MotorType.kBrushless)
         self.encoder = self.motor.getEncoder()
 
-        if RobotBase.isReal():
-            self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.REVPH, ports.catapult_solenoid_forward,
+        self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
                                             ports.catapult_solenoid_reverse)
-        else:
-            self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
-                                                ports.catapult_solenoid_reverse)
 
         if RobotBase.isSimulation():
             self.sim_motor = SparkMaxSim(self.motor)

@@ -51,7 +51,7 @@ class Drivetrain(SafeSubsystem):
         self.motor_bl_loc = Translation2d(-self.width / 2, self.length / 2)
         self.motor_br_loc = Translation2d(-self.width / 2, -self.length / 2)
 
-        wait_time = 4 if RobotBase.isReal() else 0.0
+        wait_time = 4 #if RobotBase.isReal() else 0.0
 
         self.swerve_module_fl = SwerveModule(
             ports.drivetrain_motor_driving_fl,
@@ -116,7 +116,6 @@ class Drivetrain(SafeSubsystem):
         self.rot_limiter = SlewRateLimiter(self.rotation_slew_rate)
 
         self.prev_time = RobotController.getFPGATime() * 1e-6
-
 
         if RobotBase.isSimulation():
             self.sim_yaw = 0
