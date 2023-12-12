@@ -50,19 +50,18 @@ class DriveDistance(SafeCommand):
         current_x = current_position.x
         current_y = current_position.y
 
-        self.error_x = self.goal_x - current_x
-        self.error_y = self.goal_y - current_y
+        self.motion_x.setPosition(current_x)
+        self.motion_y.setPosition(current_y)
 
-        moved_x = abs(current_x - self.initial_position.x)
-        moved_y = abs(current_y - self.initial_position.y)
+        vx = self.motion_x.getSpeed()
+        vy = self.motion_y.getSpeed()
 
-        self.motion_x.setPosition(moved_x)
-        self.motion_y.setPosition(moved_y)
+        if self.motion_x.isFinished():
+            vx = 0
+        if self.motion_y.isFinished():
+            vy = 0
 
-        self.vx = math.copysign(self.motion_x.getSpeed(), self.error_x)
-        self.vy = math.copysign(self.motion_y.getSpeed(), self.error_y)
-
-        self.drivetrain.drive(self.vx, self.vy, 0)
+        self.drivetrain.drive(vx, vy, 0, is_field_relative=False, rate_limiter=False)
 
     def isFinished(self) -> bool:
         return self.motion_x.isFinished() and self.motion_y.isFinished()

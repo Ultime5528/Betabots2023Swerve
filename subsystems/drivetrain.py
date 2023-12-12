@@ -25,7 +25,6 @@ select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empt
 
 
 class Drivetrain(SafeSubsystem):
-    motor_creation_delay = autoproperty(4)
     width = autoproperty(0.68)
     length = autoproperty(0.68)
     max_angular_speed = autoproperty(math.pi)

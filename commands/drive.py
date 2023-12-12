@@ -33,7 +33,7 @@ class Drive(SafeCommand):
             self.m_rotLimiter.calculate(self.xbox_remote.getRightX())
         )
         
-        self.drivetrain.drive(x_speed, y_speed, rot)
+        self.drivetrain.drive(x_speed, y_speed, rot, False, True)
 
     def end(self, interrupted: bool) -> None:
         self.drivetrain.drive(0.0, 0.0, 0.0, is_field_relative=False, rate_limiter=True)
