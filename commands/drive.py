@@ -3,9 +3,12 @@ from wpimath.filter import SlewRateLimiter
 
 from subsystems.drivetrain import Drivetrain
 from utils.safecommand import SafeCommand
+from utils.property import autoproperty
 
 
 class Drive(SafeCommand):
+    deadzone = autoproperty(0.1)
+
     def __init__(
         self,
         drivetrain: Drivetrain,
@@ -20,16 +23,22 @@ class Drive(SafeCommand):
         self.m_yspeedLimiter = SlewRateLimiter(3)
         self.m_rotLimiter = SlewRateLimiter(3)
 
+    def apply_deadzone(self, value):
+        if abs(value) < self.deadzone:
+            return 0.0
+        else:
+            return value
+
     def execute(self):
-        x_speed = (
+        x_speed = self.apply_deadzone(
             self.m_xspeedLimiter.calculate(self.xbox_remote.getLeftY())
             * -1
         )
-        y_speed = (
+        y_speed = self.apply_deadzone(
             self.m_yspeedLimiter.calculate(self.xbox_remote.getLeftX())
             * -1
         )
-        rot = (
+        rot = self.apply_deadzone(
             self.m_rotLimiter.calculate(self.xbox_remote.getRightX())
         )
         
