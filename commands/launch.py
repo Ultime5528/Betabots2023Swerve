@@ -18,4 +18,3 @@ class Launch(SequentialCommandGroup, SafeMixin):
             Lock(catapult),
             Load(catapult)
         )
-        self.setName("Launch")

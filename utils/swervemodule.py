@@ -1,33 +1,22 @@
 import math
 
-import rev
-import wpilib
 from rev._rev import (
     SparkMaxAbsoluteEncoder,
     CANSparkMax,
-    SparkMaxRelativeEncoder,
-    SparkMaxPIDController,
 )
-from wpilib import Encoder, RobotBase, RobotController
-from wpilib.simulation import EncoderSim, FlywheelSim
-from wpimath.controller import (
-    PIDController,
-    ProfiledPIDController,
-    SimpleMotorFeedforwardMeters,
-)
+from wpilib import RobotBase, RobotController
+from wpilib.simulation import FlywheelSim
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
 from wpimath.system.plant import DCMotor, LinearSystemId
-from wpimath.trajectory import TrapezoidProfile
 
 from utils.property import autoproperty
 from utils.sparkmaxsim import SparkMaxSim
-from utils.sparkmaxutils import configureLeader
 
 module_max_angular_velocity = math.pi / 2  # 1/2 radian per second
 module_max_angular_acceleration = 2 * math.pi  # radians per second squared
 encoder_resolution = 4096
-# TODO Add robot specific parameters
+
 wheel_radius = 0.0762  # meters
 
 turn_motor_gear_ratio = 12.8  # //12 to 1
@@ -76,9 +65,7 @@ class SwerveModule:
         drive_motor_port,
         turning_motor_port,
         chassis_angular_offset: float,
-        turning_motor_inverted: bool = False,
     ):
-        # TODO Changer la convention "m_..." pour seulement "_..."
         self._drive_motor = CANSparkMax(
             drive_motor_port, CANSparkMax.MotorType.kBrushless
         )
@@ -218,9 +205,6 @@ class SwerveModule:
         )
 
         self._desired_state = desired_state
-
-    def resetEncoders(self):
-        self._drive_encoder.setPosition(0)
 
     def simulationUpdate(self, period: float):
         self.sim_turn_motor.setInputVoltage(

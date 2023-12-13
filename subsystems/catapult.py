@@ -25,7 +25,8 @@ class Catapult(SafeSubsystem):
         self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
                                             ports.catapult_solenoid_reverse)
 
-        self.sim_motor = SparkMaxSim(self.motor)
+        if RobotBase.isSimulation():
+            self.sim_motor = SparkMaxSim(self.motor)
 
     def close(self):
         self.servo.setAngle(self.servo_angle_close)
