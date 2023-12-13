@@ -12,6 +12,8 @@ from commands.resetarm import ResetArm
 from commands.unlock import Unlock
 from subsystems.catapult import Catapult
 from subsystems.drivetrain import Drivetrain
+from commands.drivedistance import DriveDistance
+from wpimath.geometry import Pose2d
 
 
 class Robot(commands2.TimedCommandRobot):
@@ -36,6 +38,7 @@ class Robot(commands2.TimedCommandRobot):
         wpilib.SmartDashboard.putData("ResetLauncher", ResetArm(self.catapult))
         wpilib.SmartDashboard.putData("Launch", Launch(self.catapult))
         wpilib.SmartDashboard.putData("Launch uninterrupt", Launch(self.catapult))
+        wpilib.SmartDashboard.putData("DriveDistance", DriveDistance(self.drivetrain, Pose2d(4, 4, 0), 2))
         wpilib.SmartDashboard.putData("Charge1", Charge(self.catapult, 1))
         wpilib.SmartDashboard.putData("Charge2", Charge(self.catapult, 2))
         wpilib.SmartDashboard.putData("Charge3", Charge(self.catapult, 3))

@@ -6,11 +6,12 @@ import wpiutil
 from wpilib import RobotBase, RobotController
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Pose2d, Translation2d
+from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from wpimath.kinematics import (
     ChassisSpeeds,
     SwerveDrive4Kinematics,
-    SwerveDrive4Odometry, SwerveModuleState,
+    SwerveDrive4Odometry,
+    SwerveModuleState,
 )
 
 import ports
@@ -24,7 +25,6 @@ select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empt
 
 
 class Drivetrain(SafeSubsystem):
-    motor_creation_delay = autoproperty(4)
     width = autoproperty(0.68)
     length = autoproperty(0.68)
     max_angular_speed = autoproperty(math.pi)
@@ -51,30 +51,32 @@ class Drivetrain(SafeSubsystem):
         self.motor_bl_loc = Translation2d(-self.width / 2, self.length / 2)
         self.motor_br_loc = Translation2d(-self.width / 2, -self.length / 2)
 
+        wait_time = 4 #if RobotBase.isReal() else 0.0
+
         self.swerve_module_fl = SwerveModule(
             ports.drivetrain_motor_driving_fl,
             ports.drivetrain_motor_turning_fl,
-            self.angular_offset_fl
+            self.angular_offset_fl,
         )
-        wpilib.wait(self.motor_creation_delay)
+        wpilib.wait(wait_time)
         self.swerve_module_fr = SwerveModule(
             ports.drivetrain_motor_driving_fr,
             ports.drivetrain_motor_turning_fr,
-            self.angular_offset_fr
+            self.angular_offset_fr,
         )
-        wpilib.wait(self.motor_creation_delay)
+        wpilib.wait(wait_time)
         self.swerve_module_bl = SwerveModule(
             ports.drivetrain_motor_driving_bl,
             ports.drivetrain_motor_turning_bl,
-            self.angular_offset_bl
+            self.angular_offset_bl,
         )
-        wpilib.wait(self.motor_creation_delay)
+        wpilib.wait(wait_time)
         self.swerve_module_br = SwerveModule(
             ports.drivetrain_motor_driving_br,
             ports.drivetrain_motor_turning_br,
-            self.angular_offset_br
+            self.angular_offset_br,
         )
-        wpilib.wait(self.motor_creation_delay)
+        wpilib.wait(wait_time)
 
         # Gyro
         self._gyro = {
@@ -118,25 +120,13 @@ class Drivetrain(SafeSubsystem):
         if RobotBase.isSimulation():
             self.sim_yaw = 0
 
-            self.swervedrive_odometry = SwerveDrive4Odometry(
-                self.swervedrive_kinematics,
-                self._gyro.getRotation2d(),
-                (
-                    self.swerve_module_fl.getPosition(),
-                    self.swerve_module_fr.getPosition(),
-                    self.swerve_module_bl.getPosition(),
-                    self.swerve_module_br.getPosition(),
-                ),
-                Pose2d(0, 0, 0),
-            )
-
     def drive(
-            self,
-            x_speed_input: float,
-            y_speed_input: float,
-            rot_speed: float,
-            is_field_relative: bool,
-            rate_limiter: bool,
+        self,
+        x_speed_input: float,
+        y_speed_input: float,
+        rot_speed: float,
+        is_field_relative: bool = True,
+        rate_limiter: bool = True,
     ):
         x_speed = x_speed_input
         y_speed = y_speed_input
@@ -144,34 +134,60 @@ class Drivetrain(SafeSubsystem):
         if rate_limiter:
             # Convert XY to polar for rate limiting
             input_translation_direction = math.atan2(y_speed_input, x_speed_input)
-            input_translation_mag = math.sqrt(math.pow(x_speed_input, 2) + math.pow(y_speed_input, 2))
+            input_translation_mag = math.sqrt(
+                math.pow(x_speed_input, 2) + math.pow(y_speed_input, 2)
+            )
 
             direction_slew_rate = 0
             if self.current_translation_mag != 0.0:
-                direction_slew_rate = abs(self.direction_slew_rate / self.current_translation_mag)
+                direction_slew_rate = abs(
+                    self.direction_slew_rate / self.current_translation_mag
+                )
             else:
                 direction_slew_rate = 500  # some high number that means the slew rate is effectively instantaneous
 
             current_time = RobotController.getFPGATime() * 1e-6
             elapsed_time = current_time - self.prev_time
-            angle_diff = angleDifference(input_translation_direction, self.current_translation_dir)
+            angle_diff = angleDifference(
+                input_translation_direction, self.current_translation_dir
+            )
 
             if angle_diff < self.acceptable_wheel_rotation * math.pi:
-                self.current_translation_dir = stepTowardsCircular(self.current_translation_dir, input_translation_direction, direction_slew_rate * elapsed_time)
-                self.current_translation_mag = self.mag_limiter.calculate(input_translation_mag)
+                self.current_translation_dir = stepTowardsCircular(
+                    self.current_translation_dir,
+                    input_translation_direction,
+                    direction_slew_rate * elapsed_time,
+                )
+                self.current_translation_mag = self.mag_limiter.calculate(
+                    input_translation_mag
+                )
             elif angle_diff > self.wheel_flip_rotation * math.pi:
-                if self.current_translation_mag > 1e-4:  # small number to avoid floating point errors
+                if (
+                    self.current_translation_mag > 1e-4
+                ):  # small number to avoid floating point errors
                     self.current_translation_mag = self.mag_limiter.calculate(0.0)
                 else:
-                    self.current_translation_dir = wrapAngle(self.current_translation_dir + math.pi)
-                    self.current_translation_mag = self.mag_limiter.calculate(input_translation_mag)
+                    self.current_translation_dir = wrapAngle(
+                        self.current_translation_dir + math.pi
+                    )
+                    self.current_translation_mag = self.mag_limiter.calculate(
+                        input_translation_mag
+                    )
             else:
-                self.current_translation_dir = stepTowardsCircular(self.current_translation_dir, input_translation_direction, direction_slew_rate * elapsed_time)
+                self.current_translation_dir = stepTowardsCircular(
+                    self.current_translation_dir,
+                    input_translation_direction,
+                    direction_slew_rate * elapsed_time,
+                )
                 self.current_translation_mag = self.mag_limiter.calculate(0.0)
 
             self.prev_time = current_time
-            x_speed = self.current_translation_mag * math.cos(self.current_translation_dir)
-            y_speed = self.current_translation_mag * math.sin(self.current_translation_dir)
+            x_speed = self.current_translation_mag * math.cos(
+                self.current_translation_dir
+            )
+            y_speed = self.current_translation_mag * math.sin(
+                self.current_translation_dir
+            )
             self.current_rotation = self.rot_limiter.calculate(rot_speed)
         else:
             x_speed = x_speed_input
@@ -190,7 +206,9 @@ class Drivetrain(SafeSubsystem):
             else ChassisSpeeds(x_speed, y_speed, rot_speed)
         )
 
-        SwerveDrive4Kinematics.desaturateWheelSpeeds(swerve_module_states, self.swerve_module_fr.max_speed)
+        SwerveDrive4Kinematics.desaturateWheelSpeeds(
+            swerve_module_states, self.swerve_module_fr.max_speed
+        )
         self.swerve_module_fl.setDesiredState(swerve_module_states[0])
         self.swerve_module_fr.setDesiredState(swerve_module_states[1])
         self.swerve_module_bl.setDesiredState(swerve_module_states[2])
@@ -209,10 +227,18 @@ class Drivetrain(SafeSubsystem):
         """
         Points all the wheels into the center to prevent movement
         """
-        self.swerve_module_fl.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
-        self.swerve_module_fr.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
-        self.swerve_module_bl.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
-        self.swerve_module_br.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+        self.swerve_module_fl.setDesiredState(
+            SwerveModuleState(0, Rotation2d.fromDegrees(45))
+        )
+        self.swerve_module_fr.setDesiredState(
+            SwerveModuleState(0, Rotation2d.fromDegrees(-45))
+        )
+        self.swerve_module_bl.setDesiredState(
+            SwerveModuleState(0, Rotation2d.fromDegrees(-45))
+        )
+        self.swerve_module_br.setDesiredState(
+            SwerveModuleState(0, Rotation2d.fromDegrees(45))
+        )
 
     def periodic(self):
         self.swerve_estimator.update(
@@ -228,17 +254,33 @@ class Drivetrain(SafeSubsystem):
         self._field.setRobotPose(self.swerve_estimator.getEstimatedPosition())
 
     def simulationPeriodic(self):
+        wpilib.SmartDashboard.putNumberArray(
+            "SwerveStates",
+            [
+                self.swerve_module_fl.getState().angle.radians(),
+                self.swerve_module_fl.getState().speed,
+                self.swerve_module_fr.getState().angle.radians(),
+                self.swerve_module_fr.getState().speed,
+                self.swerve_module_bl.getState().angle.radians(),
+                self.swerve_module_bl.getState().speed,
+                self.swerve_module_br.getState().angle.radians(),
+                self.swerve_module_br.getState().speed,
+            ],
+        )
+
         self.swerve_module_fl.simulationUpdate(self.period_seconds)
         self.swerve_module_fr.simulationUpdate(self.period_seconds)
         self.swerve_module_bl.simulationUpdate(self.period_seconds)
         self.swerve_module_br.simulationUpdate(self.period_seconds)
 
-        self.swervedrive_odometry.update(
+        self.swerve_estimator.update(
             self._gyro.getRotation2d(),
-            self.swerve_module_fl.getPosition(),
-            self.swerve_module_fr.getPosition(),
-            self.swerve_module_bl.getPosition(),
-            self.swerve_module_br.getPosition(),
+            (
+                self.swerve_module_fl.getPosition(),
+                self.swerve_module_fr.getPosition(),
+                self.swerve_module_bl.getPosition(),
+                self.swerve_module_br.getPosition(),
+            ),
         )
 
         module_states = (
@@ -247,10 +289,9 @@ class Drivetrain(SafeSubsystem):
             self.swerve_module_bl.getState(),
             self.swerve_module_br.getState(),
         )
-
         chassis_speed = self.swervedrive_kinematics.toChassisSpeeds(*module_states)
         chassis_rotation_speed = chassis_speed.omega
         self.sim_yaw += chassis_rotation_speed * self.period_seconds
         self._gyro.setSimAngle(-math.degrees(self.sim_yaw))
 
-        self._field.setRobotPose(self.swervedrive_odometry.getPose())
+        self._field.setRobotPose(self.swerve_estimator.getEstimatedPosition())

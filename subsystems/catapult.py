@@ -22,12 +22,8 @@ class Catapult(SafeSubsystem):
         self.servo =  wpilib.Servo(ports.catapult_servo)
         self.encoder = self.motor.getEncoder()
 
-        if RobotBase.isReal():
-            self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.REVPH, ports.catapult_solenoid_forward,
+        self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
                                             ports.catapult_solenoid_reverse)
-        else:
-            self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
-                                                ports.catapult_solenoid_reverse)
 
         if RobotBase.isSimulation():
             self.sim_motor = SparkMaxSim(self.motor)
