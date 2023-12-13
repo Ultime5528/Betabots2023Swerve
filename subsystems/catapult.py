@@ -19,7 +19,7 @@ class Catapult(SafeSubsystem):
         super().__init__()
         self.switch = DigitalInput(ports.catapult_limitswitch)
         self.motor = rev.CANSparkMax(ports.catapult_motor, rev.CANSparkMax.MotorType.kBrushless)
-        self.servo =  wpilib.Servo(ports.catapult_servo)
+        self.servo = wpilib.Servo(ports.catapult_servo)
         self.encoder = self.motor.getEncoder()
 
         self.piston = wpilib.DoubleSolenoid(PneumaticsModuleType.CTREPCM, ports.catapult_solenoid_forward,
@@ -43,9 +43,6 @@ class Catapult(SafeSubsystem):
     def stopLocker(self):
         self.piston.set(wpilib.DoubleSolenoid.Value.kOff)
 
-    def isDown(self):
-        return self.switch.get()
-
     def moveUp(self):
         self.motor.set(self.speed_up)
 
@@ -56,7 +53,7 @@ class Catapult(SafeSubsystem):
         self.motor.stopMotor()
 
     def isArmDown(self):
-        return self.switch.get()
+        return not self.switch.get()
 
     def simulationPeriodic(self) -> None:
         self.sim_motor.setVelocity(self.motor.get())

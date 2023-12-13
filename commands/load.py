@@ -14,6 +14,7 @@ class Load(SafeCommand):
         self.timer = wpilib.Timer()
 
     def initialize(self) -> None:
+        self.timer.reset()
         self.timer.start()
 
     def execute(self) -> None:
@@ -23,6 +24,5 @@ class Load(SafeCommand):
         return self.timer.get() >= self.open_time
 
     def end(self, interrupted: bool) -> None:
-        self.catapult.close()
         self.timer.stop()
-        self.timer.reset()
+        self.catapult.close()

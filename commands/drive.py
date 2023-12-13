@@ -2,11 +2,14 @@ import commands2.button
 from wpimath.filter import SlewRateLimiter
 
 from subsystems.drivetrain import Drivetrain
+from utils.property import autoproperty
 from utils.safecommand import SafeCommand
 from utils.property import autoproperty
 
 
 class Drive(SafeCommand):
+    is_field_relative = autoproperty(True)
+    has_rate_limiter = autoproperty(False)
     deadzone = autoproperty(0.1)
 
     def __init__(
@@ -40,9 +43,10 @@ class Drive(SafeCommand):
         )
         rot = self.apply_deadzone(
             self.m_rotLimiter.calculate(self.xbox_remote.getRightX())
+            * -1
         )
         
-        self.drivetrain.drive(x_speed, y_speed, rot, False, True)
+        self.drivetrain.drive(x_speed, y_speed, rot, self.is_field_relative, self.has_rate_limiter)
 
     def end(self, interrupted: bool) -> None:
-        self.drivetrain.drive(0.0, 0.0, 0.0, is_field_relative=False, rate_limiter=True)
+        self.drivetrain.drive(0.0, 0.0, 0.0, is_field_relative=False, rate_limiter=False)

@@ -1,6 +1,6 @@
-import wpilib
 from commands2 import SequentialCommandGroup, WaitCommand
 
+from commands.load import Load
 from subsystems.catapult import Catapult
 from commands.resetarm import ResetArm
 from commands.unlock import Unlock
@@ -16,4 +16,5 @@ class Launch(SequentialCommandGroup, SafeMixin):
             WaitCommand(0.5),
             ResetArm(catapult),
             Lock(catapult),
+            Load(catapult)
         )
