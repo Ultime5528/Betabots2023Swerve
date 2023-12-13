@@ -23,6 +23,7 @@ drivetrain_motor_turning_br: Final = 1
 catapult_motor = 9
 
 # PWM
+catapult_servo: Final = 0
 
 # DIO
 catapult_limitswitch: Final = 0
