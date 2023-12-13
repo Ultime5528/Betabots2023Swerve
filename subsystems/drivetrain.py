@@ -21,7 +21,7 @@ from utils.safesubsystem import SafeSubsystem
 from utils.swervemodule import SwerveModule
 from utils.swerveutils import *
 
-select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "empty"
+select_gyro: Literal["navx", "adis16448", "adis16470", "adxrs", "empty"] = "adis16470"
 
 
 class Drivetrain(SafeSubsystem):

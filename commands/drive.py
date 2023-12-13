@@ -2,10 +2,13 @@ import commands2.button
 from wpimath.filter import SlewRateLimiter
 
 from subsystems.drivetrain import Drivetrain
+from utils.property import autoproperty
 from utils.safecommand import SafeCommand
 
 
 class Drive(SafeCommand):
+    is_field_relative = autoproperty(True)
+    has_rate_limiter = autoproperty(False)
     def __init__(
         self,
         drivetrain: Drivetrain,
@@ -34,7 +37,7 @@ class Drive(SafeCommand):
             * -1
         )
         
-        self.drivetrain.drive(x_speed, y_speed, rot, True, False)
+        self.drivetrain.drive(x_speed, y_speed, rot, self.is_field_relative, self.has_rate_limiter)
 
     def end(self, interrupted: bool) -> None:
         self.drivetrain.drive(0.0, 0.0, 0.0, True, True)
