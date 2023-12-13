@@ -150,9 +150,6 @@ class Drivetrain(SafeSubsystem):
         is_field_relative: bool,
         rate_limiter: bool = True,
     ):
-        x_speed = x_speed_input
-        y_speed = y_speed_input
-
         if rate_limiter:
             # Convert XY to polar for rate limiting
             input_translation_direction = math.atan2(y_speed_input, x_speed_input)
@@ -160,7 +157,6 @@ class Drivetrain(SafeSubsystem):
                 math.pow(x_speed_input, 2) + math.pow(y_speed_input, 2)
             )
 
-            direction_slew_rate = 0
             if self.current_translation_mag != 0.0:
                 direction_slew_rate = abs(
                     self.direction_slew_rate / self.current_translation_mag
