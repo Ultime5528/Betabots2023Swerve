@@ -40,4 +40,4 @@ class Drive(SafeCommand):
         self.drivetrain.drive(x_speed, y_speed, rot, self.is_field_relative, self.has_rate_limiter)
 
     def end(self, interrupted: bool) -> None:
-        self.drivetrain.drive(0.0, 0.0, 0.0, is_field_relative=False, rate_limiter=True)
+        self.drivetrain.drive(0.0, 0.0, 0.0, is_field_relative=False)

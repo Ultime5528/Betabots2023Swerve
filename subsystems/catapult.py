@@ -43,9 +43,6 @@ class Catapult(SafeSubsystem):
     def stopLocker(self):
         self.piston.set(wpilib.DoubleSolenoid.Value.kOff)
 
-    def isDown(self):
-        return not self.switch.get()
-
     def moveUp(self):
         self.motor.set(self.speed_up)
 
